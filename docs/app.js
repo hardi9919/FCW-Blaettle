@@ -42,16 +42,26 @@ OneSignalDeferred.push(async(O)=>{
   await O.init({
     appId: CONFIG.oneSignalAppId,
     notifyButton: { enable: false },
-    allowLocalhostAsSecureOrigin: true,
-    serviceWorkerPath: 'OneSignalSDKWorker.js',
-    serviceWorkerParam: { scope: '/FCW-Blaettle/' },
   });
+  // Glocke aktiv faerben wenn bereits angemeldet
+  if(O.User.PushSubscription.optedIn){
+    document.getElementById('notif-btn').classList.add('active');
+  }
 });
 
-document.getElementById('notif-btn').addEventListener('click',async()=>{
-  if(!window.OneSignal)return;
-  if(!(await OneSignal.Notifications.permission)) await OneSignal.Notifications.requestPermission();
-  document.getElementById('notif-btn').classList.toggle('active');
+document.getElementById('notif-btn').addEventListener('click', async () => {
+  if (!window.OneSignal) return;
+  const sub = OneSignal.User.PushSubscription;
+  if (sub.optedIn) {
+    // Bereits angemeldet -> abmelden
+    await sub.optOut();
+    document.getElementById('notif-btn').classList.remove('active');
+  } else {
+    // Anmelden
+    await OneSignal.Notifications.requestPermission();
+    await sub.optIn();
+    document.getElementById('notif-btn').classList.add('active');
+  }
 });
 
 let deferredInstallPrompt=null;

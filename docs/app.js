@@ -114,7 +114,18 @@ function showView(name){
   if(view)view.classList.add('active');
   document.querySelector('[data-view="'+name+'"]')?.classList.add('active');
 }
-document.querySelectorAll('.nav-item').forEach(btn=>btn.addEventListener('click',()=>showView(btn.dataset.view)));
+document.querySelectorAll('.nav-item:not(.nav-impressum)').forEach(btn=>btn.addEventListener('click',()=>showView(btn.dataset.view)));
+
+// Impressum Modal
+document.getElementById('impressum-btn').addEventListener('click',()=>{
+  document.getElementById('impressum-modal').classList.remove('hidden');
+});
+document.getElementById('impressum-close').addEventListener('click',()=>{
+  document.getElementById('impressum-modal').classList.add('hidden');
+});
+document.getElementById('impressum-modal').addEventListener('click',(e)=>{
+  if(e.target===e.currentTarget) document.getElementById('impressum-modal').classList.add('hidden');
+});
 document.getElementById('btn-back').addEventListener('click',()=>{
   document.getElementById('pdf-strip').innerHTML='';
   setZoom(1);

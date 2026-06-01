@@ -62,7 +62,74 @@
   <nav class="bottom-nav">
     <button class="nav-item active" data-view="archive"><span>📋</span><label>Ausgaben</label></button>
     <button class="nav-item" data-view="latest"><span>📖</span><label>Aktuell</label></button>
+    <button class="nav-item nav-impressum" id="impressum-btn"><span>⚖️</span><label>Impressum</label></button>
   </nav>
+
+  <!-- Impressum Modal -->
+  <div id="impressum-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <button class="modal-close" id="impressum-close">✕</button>
+      <div class="modal-content">
+        <h2>Impressum</h2>
+        <h3>Anbieter</h3>
+        <p>FC Weisingen 1921 e.V.<br>Sportplatzweg 1<br>89438 Weisingen</p>
+        <p>E-Mail: <a href="mailto:mail@fcweisingen.de">mail@fcweisingen.de</a><br>
+        Tel. +49 9075 8325<br>
+        Internet: <a href="https://www.fcweisingen.de" target="_blank">www.fcweisingen.de</a></p>
+        <p>Technischer Ansprechpartner: Jacob Hartmann</p>
+
+        <h3>Registergericht und Registernummer</h3>
+        <p>Amtsgericht Dillingen a. d. Donau<br>St.-Ulrichs-Platz 3<br>89407 Dillingen a. d. Donau<br>Registernummer: VR 110</p>
+
+        <h3>Disclaimer</h3>
+        <h4>Haftung für Inhalte</h4>
+        <p>Die Inhalte dieser Website werden mit größtmöglicher Sorgfalt erstellt. Wir übernehmen jedoch keine Gewähr für die Richtigkeit, Vollständigkeit und Aktualität der bereitgestellten Inhalte. Die Nutzung der Inhalte der Website erfolgt auf eigene Gefahr des Nutzers. Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen.</p>
+
+        <h4>Haftung für Links</h4>
+        <p>Diese Website enthält Verknüpfungen zu Websites Dritter ("externe Links"). Diese Websites unterliegen der Haftung der jeweiligen Betreiber. Wir haben bei der erstmaligen Verknüpfung die fremden Inhalte auf etwaige Rechtsverstöße überprüft. Bei Kenntnis von Rechtsverstößen werden externe Links unverzüglich gelöscht.</p>
+
+        <h4>Urheberrecht</h4>
+        <p>Die auf dieser Website veröffentlichten Inhalte unterliegen dem deutschen Urheberrecht. Jede vom deutschen Urheberrecht nicht zugelassene Verwertung bedarf der vorherigen schriftlichen Zustimmung des Anbieters. Die Darstellung dieser Website in fremden Frames ist nur mit schriftlicher Erlaubnis zulässig.</p>
+
+        <h4>Verbraucherstreitbeilegungsgesetz</h4>
+        <p>Wir nehmen nicht an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teil.</p>
+
+        <hr>
+        <h2>Datenschutzerklärung</h2>
+        <p>Datenschutz hat einen besonders hohen Stellenwert für uns. Eine Nutzung unserer Internetseiten ist grundsätzlich ohne jede Angabe personenbezogener Daten möglich.</p>
+
+        <h3>1. Verantwortlicher</h3>
+        <p>FC Weisingen 1921 e.V.<br>Sportplatzweg 1<br>89438 Weisingen<br>
+        Tel. +49 9075 8325<br>
+        E-Mail: <a href="mailto:mail@fcweisingen.de">mail@fcweisingen.de</a><br>
+        Website: <a href="https://www.fcweisingen.de" target="_blank">www.fcweisingen.de</a></p>
+
+        <h3>2. Cookies</h3>
+        <p>Unsere Internetseiten verwenden Cookies. Die betroffene Person kann die Setzung von Cookies durch entsprechende Einstellung des genutzten Internetbrowsers jederzeit verhindern.</p>
+
+        <h3>3. Erfassung allgemeiner Daten</h3>
+        <p>Unsere Internetseite erfasst bei jedem Aufruf allgemeine Daten wie Browsertyp, Betriebssystem, IP-Adresse und Zugriffsdatum. Diese Daten werden nicht mit personenbezogenen Daten zusammengeführt.</p>
+
+        <h3>4. Kontaktaufnahme</h3>
+        <p>Sofern eine betroffene Person per E-Mail Kontakt aufnimmt, werden die übermittelten personenbezogenen Daten automatisch gespeichert. Es erfolgt keine Weitergabe an Dritte.</p>
+
+        <h3>5. Rechte der betroffenen Person</h3>
+        <p>Jede betroffene Person hat das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung sowie das Recht auf Datenübertragbarkeit. Zur Ausübung dieser Rechte wenden Sie sich an: <a href="mailto:mail@fcweisingen.de">mail@fcweisingen.de</a></p>
+
+        <h3>6. Hosting</h3>
+        <p>Diese App wird über GitHub Pages (GitHub, Inc.) gehostet. Hierbei können Verbindungsdaten verarbeitet werden. Weitere Informationen: <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank">GitHub Datenschutzerklärung</a></p>
+
+        <h3>7. Push-Benachrichtigungen</h3>
+        <p>Sofern Sie Push-Benachrichtigungen aktivieren, wird Ihr Browser-Abonnement bei OneSignal (Lilith Games Corp.) gespeichert. Sie können die Benachrichtigungen jederzeit über die Glocke in der App deaktivieren.</p>
+
+        <h3>8. SSL-Verschlüsselung</h3>
+        <p>Diese Seite nutzt aus Sicherheitsgründen eine TLS-Verschlüsselung. Eine verschlüsselte Verbindung erkennen Sie am "https://" in der Adresszeile.</p>
+
+        <p class="modal-footer-note">Hilfe bei der Erstellung dieser Datenschutzerklärung: DGD Deutsche Gesellschaft für Datenschutz GmbH</p>
+      </div>
+    </div>
+  </div>
+
   <script src="app.js"></script>
 </body>
 </html>

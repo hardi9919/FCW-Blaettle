@@ -29,6 +29,21 @@ header { background: var(--red); color: var(--white); position: sticky; top: 0; 
 main { max-width: 700px; margin: 0 auto; padding: 16px 16px 80px; min-height: calc(100vh - 64px - 60px); }
 .view { display: none; }
 .view.active { display: block; }
+
+/* Reader-Ansicht: volle Hoehe nutzen, Toolbar + Strip uebereinander */
+#view-reader.active {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 64px - 60px);
+  padding: 0;
+  overflow: hidden;
+}
+#view-reader .reader-toolbar {
+  flex-shrink: 0;
+  padding: 8px 12px;
+  margin-bottom: 0;
+  background: var(--gray);
+}
 .section-title { font-size: 1.1rem; font-weight: 700; color: var(--red); margin-bottom: 14px; padding-bottom: 6px; border-bottom: 2px solid var(--red); }
 
 .archive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
@@ -55,13 +70,15 @@ main { max-width: 700px; margin: 0 auto; padding: 16px 16px 80px; min-height: ca
   display: flex;
   flex-direction: row;
   overflow-x: scroll;
-  overflow-y: auto;
+  overflow-y: hidden;
   width: 100%;
-  height: calc(100vh - 120px);
+  flex: 1;              /* fuellt den verbleibenden Platz exakt aus */
   touch-action: pan-x pan-y pinch-zoom;
   -webkit-overflow-scrolling: touch;
-  background: #222;
-  gap: 0;
+  background: #333;
+  gap: 6px;             /* sichtbarer Abstand zwischen Seiten */
+  padding: 0 6px;
+  align-items: center;
 }
 .pdf-strip::-webkit-scrollbar { display: none; }
 .pdf-page {
@@ -71,6 +88,7 @@ main { max-width: 700px; margin: 0 auto; padding: 16px 16px 80px; min-height: ca
   width: auto;
   object-fit: contain;
   background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
 }
 
 .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: white; border-top: 1px solid #e0e0e0; display: flex; z-index: 100; box-shadow: 0 -2px 10px rgba(0,0,0,0.08); }

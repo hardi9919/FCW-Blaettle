@@ -130,21 +130,29 @@ async function renderPdfStrip(pdfUrl){
   strip.innerHTML='';
 
   // Hoehe des Strips bestimmen
-  const stripH=strip.clientHeight||window.innerHeight-120;
+  const stripH=strip.clientHeight||window.innerHeight-168;
+
+  // Hoehere Aufloesung fuer scharfen Zoom (2x Bildschirmaufloesung)
+  const dpr=Math.min(window.devicePixelRatio||1, 3);
 
   for(let i=1;i<=totalPages;i++){
     const page=await pdf.getPage(i);
     const vp0=page.getViewport({scale:1});
-    // Skalierung: Seite fuellt die Hoehe des Strips
-    const scale=stripH/vp0.height;
-    const vp=page.getViewport({scale});
+    // Anzeigeskalierung: Seite fuellt Strip-Hoehe
+    const displayScale=stripH/vp0.height;
+    // Renderaufloesung: dpr-fach hoeher fuer scharfen Pinch-Zoom
+    const renderScale=displayScale*dpr;
+    const vp=page.getViewport({scale:renderScale});
     const canvas=document.createElement('canvas');
     canvas.width=vp.width; canvas.height=vp.height;
     await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
     const img=document.createElement('img');
-    img.src=canvas.toDataURL('image/jpeg',0.92);
+    img.src=canvas.toDataURL('image/jpeg',0.93);
     img.className='pdf-page';
     img.dataset.page=i;
+    // CSS-Groesse: wird auf Anzeigegroesse gesetzt, Zoom enthuellt die Extra-Pixel
+    img.style.height=stripH+'px';
+    img.style.width='auto';
     strip.appendChild(img);
   }
 

@@ -146,7 +146,7 @@ main:has(#view-reader.active) {
   background: #333;
   gap: 6px;
   padding: 0;
-  align-items: center;
+  align-items: flex-start;
   cursor: grab;
 }
 .pdf-strip::-webkit-scrollbar { display: none; }

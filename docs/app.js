@@ -136,7 +136,6 @@ document.getElementById('btn-back').addEventListener('click',()=>{
 let currentZoom = 1;
 function setZoom(z) {
   currentZoom = Math.min(3, Math.max(0.5, Math.round(z * 4) / 4));
-  const strip = document.getElementById('pdf-strip');
   document.querySelectorAll('.pdf-page').forEach(img => {
     const bw = parseFloat(img.dataset.baseW);
     const bh = parseFloat(img.dataset.baseH);
@@ -145,7 +144,7 @@ function setZoom(z) {
       img.style.height = (bh * currentZoom) + 'px';
     }
   });
-  // Nach Zoom immer an den Anfang scrollen
+  const strip = document.getElementById('pdf-strip');
   if (strip) { strip.scrollTop = 0; strip.scrollLeft = 0; }
   const el = document.getElementById('zoom-level');
   if (el) el.textContent = Math.round(currentZoom * 100) + '%';
@@ -221,6 +220,12 @@ async function renderPdfStrip(pdfUrl){
   const stripW=strip.clientWidth  || window.innerWidth;
   const stripH=strip.clientHeight || window.innerHeight-168;
 
+  // Innerer Wrapper: bestimmt die scrollbare Flaeche exakt
+  const wrapper=document.createElement('div');
+  wrapper.id='pages-wrapper';
+  wrapper.style.cssText='display:inline-flex;flex-direction:row;gap:6px;min-height:100%;align-items:flex-start;padding:0;';
+  strip.appendChild(wrapper);
+
   // 3x Renderaufloesung: scharfer Zoom bis 300% ohne Qualitaetsverlust
   const renderFactor = 3;
 
@@ -240,20 +245,19 @@ async function renderPdfStrip(pdfUrl){
     img.dataset.page=i;
     const dispW=Math.round(vp0.width*displayScale);
     const dispH=Math.round(vp0.height*displayScale);
-    // Basisgroesse fuer Zoom merken
     img.dataset.baseW=dispW;
     img.dataset.baseH=dispH;
-    img.style.width=dispW+'px';
-    img.style.height=dispH+'px';
-    strip.appendChild(img);
+    img.style.cssText=`width:${dispW}px;height:${dispH}px;flex-shrink:0;display:block;`;
+    wrapper.appendChild(img);
   }
 
   // Seitenanzeige per Scroll aktualisieren
-  strip.scrollLeft=0;
+  strip.scrollLeft=0; strip.scrollTop=0;
   document.getElementById('page-info').textContent='Seite 1 / '+totalPages;
   strip.addEventListener('scroll',()=>{
-    if(!strip.firstElementChild)return;
-    const pageW=strip.firstElementChild.clientWidth+6; // +6 fuer gap
+    const first=wrapper.firstElementChild;
+    if(!first)return;
+    const pageW=first.clientWidth+6;
     if(pageW===0)return;
     const cur=Math.round(strip.scrollLeft/pageW)+1;
     document.getElementById('page-info').textContent='Seite '+Math.min(cur,totalPages)+' / '+totalPages;

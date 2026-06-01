@@ -1,9 +1,23 @@
 [
   {
+    "id": "2026-06-01_WORKSHEETS_Business_Communication_02",
+    "title": "Worksheets Business Communication 02",
+    "date": "2026-06-01",
+    "filename": "2026-06-01_WORKSHEETS_Business_Communication_02.pdf",
+    "url": "pdfs/2026-06-01_WORKSHEETS_Business_Communication_02.pdf"
+  },
+  {
     "id": "2026-06-01_BTI_04D_Baudynamik",
     "title": "Bti 04D Baudynamik",
     "date": "2026-06-01",
     "filename": "2026-06-01_BTI_04D_Baudynamik.pdf",
     "url": "pdfs/2026-06-01_BTI_04D_Baudynamik.pdf"
+  },
+  {
+    "id": "blaettle-holzheim",
+    "title": "Blaettle Holzheim",
+    "date": "2000-01-01",
+    "filename": "blaettle-holzheim.pdf",
+    "url": "pdfs/blaettle-holzheim.pdf"
   }
 ]

@@ -117,15 +117,11 @@ function showView(name){
 document.querySelectorAll('.nav-item:not(.nav-impressum)').forEach(btn=>btn.addEventListener('click',()=>showView(btn.dataset.view)));
 
 // Benachrichtigungs-Hilfe Modal
-document.getElementById('notif-help-btn').addEventListener('click',()=>{
-  document.getElementById('notif-help-modal').classList.remove('hidden');
-});
-document.getElementById('notif-help-close').addEventListener('click',()=>{
-  document.getElementById('notif-help-modal').classList.add('hidden');
-});
-document.getElementById('notif-help-modal').addEventListener('click',(e)=>{
-  if(e.target===e.currentTarget) document.getElementById('notif-help-modal').classList.add('hidden');
-});
+function openNotifHelp(){ document.getElementById('notif-help-modal').classList.remove('hidden'); }
+function closeNotifHelp(){ document.getElementById('notif-help-modal').classList.add('hidden'); }
+document.getElementById('notif-help-btn').onclick = openNotifHelp;
+document.getElementById('notif-help-close').onclick = closeNotifHelp;
+document.getElementById('notif-help-modal').onclick = (e)=>{ if(e.target===e.currentTarget) closeNotifHelp(); };
 
 // Impressum Modal
 document.getElementById('impressum-btn').addEventListener('click',()=>{

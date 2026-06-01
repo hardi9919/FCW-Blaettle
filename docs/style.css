@@ -31,11 +31,16 @@ main { max-width: 700px; margin: 0 auto; padding: 16px 16px 80px; min-height: ca
 .view.active { display: block; }
 
 /* Reader-Ansicht */
-main:has(#view-reader.active) { padding: 0; }
+main:has(#view-reader.active) {
+  padding: 0;
+  max-width: none;
+  height: calc(100vh - 64px - 60px);
+  overflow: hidden;
+}
 #view-reader.active {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 64px - 60px);
+  height: 100%;
   overflow: hidden;
 }
 /* Reader Body: Toolbar + [Prev | Strip | Next] */

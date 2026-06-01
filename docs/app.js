@@ -135,31 +135,10 @@ document.getElementById('btn-back').addEventListener('click',()=>{
 // Zoom (nur Desktop)
 let currentZoom = 1;
 function setZoom(z) {
-  const strip = document.getElementById('pdf-strip');
-  const oldZoom = currentZoom;
   currentZoom = Math.min(3, Math.max(0.5, Math.round(z * 4) / 4));
-  const ratio = currentZoom / oldZoom;
-
-  // Sichtbare Mitte vor dem Zoom merken
-  const cx = strip ? (strip.scrollLeft + strip.clientWidth  / 2) * ratio - strip.clientWidth  / 2 : 0;
-  const cy = strip ? (strip.scrollTop  + strip.clientHeight / 2) * ratio - strip.clientHeight / 2 : 0;
-
-  document.querySelectorAll('.pdf-page').forEach(img => {
-    const bw = parseFloat(img.dataset.baseW);
-    const bh = parseFloat(img.dataset.baseH);
-    if (bw && bh) {
-      img.style.width  = (bw * currentZoom) + 'px';
-      img.style.height = (bh * currentZoom) + 'px';
-    }
-  });
-
-  // Scroll NACH dem Reflow setzen (requestAnimationFrame wartet auf Browser-Neuberechnung)
-  if (strip) {
-    requestAnimationFrame(() => {
-      strip.scrollLeft = Math.max(0, cx);
-      strip.scrollTop  = Math.max(0, cy);
-    });
-  }
+  // CSS zoom auf den Wrapper: skaliert Layout ohne Scroll-Reset
+  const wrapper = document.getElementById('pages-wrapper');
+  if (wrapper) wrapper.style.zoom = currentZoom;
   const el = document.getElementById('zoom-level');
   if (el) el.textContent = Math.round(currentZoom * 100) + '%';
 }

@@ -50,8 +50,8 @@ main { max-width: 700px; margin: 0 auto; padding: 16px 16px 80px; min-height: ca
 .reader-title { flex: 1; font-weight: 700; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .page-info { font-size: 0.8rem; color: #888; white-space: nowrap; }
 
-.flipbook-wrap { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 60vh; }
-#flipbook-container { flex: 1; max-width: 580px; min-height: 400px; display: flex; justify-content: center; }
+.flipbook-wrap { display: flex; align-items: flex-start; justify-content: center; gap: 8px; min-height: 60vh; }
+#flipbook-container { flex: 1; max-width: 700px; min-height: 400px; display: flex; justify-content: center; overflow: auto; touch-action: pan-x pan-y pinch-zoom; }
 .flip-nav { background: var(--red); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.6rem; cursor: pointer; flex-shrink: 0; transition: background 0.2s; display: flex; align-items: center; justify-content: center; }
 .flip-nav:hover { background: var(--red-dk); }
 .flip-nav:disabled { background: #ccc; cursor: default; }
@@ -64,5 +64,7 @@ main { max-width: 700px; margin: 0 auto; padding: 16px 16px 80px; min-height: ca
 
 @media (max-width: 480px) {
   .archive-grid { grid-template-columns: repeat(2, 1fr); }
-  .flip-nav { width: 34px; height: 34px; font-size: 1.3rem; }
+  /* Pfeiltasten auf Mobil ausblenden – Wischen reicht */
+  .flip-nav { display: none; }
+  #flipbook-container { max-width: 100vw; }
 }

@@ -125,7 +125,7 @@ async function renderPdfToFlipbook(pdfUrl){
   const pages=[];
   for(let i=1;i<=totalPages;i++){
     const page=await pdf.getPage(i);
-    const scale=Math.min(window.innerWidth*0.45,280)/page.getViewport({scale:1}).width;
+    const scale=(window.innerWidth - 16)/page.getViewport({scale:1}).width;
     const vp=page.getViewport({scale});
     const canvas=document.createElement('canvas');
     canvas.width=vp.width; canvas.height=vp.height;
@@ -175,5 +175,13 @@ function destroyFlipbook(){
   document.getElementById('flipbook-container').innerHTML='';
 }
 
-loadIssues();
-showView('archive');
+async function init(){
+  await loadIssues();
+  // Standardmaessig die aktuellste Ausgabe direkt oeffnen
+  if(allIssues.length>0){
+    showView('latest');
+  } else {
+    showView('archive');
+  }
+}
+init();

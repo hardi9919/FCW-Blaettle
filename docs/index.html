@@ -24,9 +24,61 @@
         <h1>FCW-Blättle</h1>
         <span>FC Weisingen 1921</span>
       </div>
+      <button id="notif-help-btn" class="notif-btn" title="Hilfe zu Benachrichtigungen">❓</button>
       <button id="notif-btn" class="notif-btn" title="Benachrichtigungen aktivieren">🔔</button>
     </div>
   </header>
+
+  <!-- Benachrichtigungs-Hilfe Modal -->
+  <div id="notif-help-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <button class="modal-close" id="notif-help-close">✕</button>
+      <div class="modal-content">
+        <h2>🔔 Benachrichtigungen einrichten</h2>
+        <p>Damit du eine Benachrichtigung bekommst, wenn eine neue Ausgabe erscheint, müssen Benachrichtigungen erlaubt sein.</p>
+
+        <hr>
+
+        <h3>📱 In der installierten App (Android)</h3>
+        <ol>
+          <li>Tippe auf die <strong>🔔 Glocke</strong> oben rechts</li>
+          <li>Es erscheint ein Dialog — tippe auf <strong>„Erlauben"</strong></li>
+          <li>Die Glocke leuchtet auf — Benachrichtigungen sind aktiv ✅</li>
+        </ol>
+        <p><strong>Falls kein Dialog erscheint:</strong><br>
+        Einstellungen → Apps → Chrome → Benachrichtigungen → aktivieren<br>
+        <em>oder</em><br>
+        Einstellungen → Apps → FCW-Blättle → Benachrichtigungen → aktivieren</p>
+
+        <hr>
+
+        <h3>🖥️ Im Browser (Chrome / Edge)</h3>
+        <ol>
+          <li>Tippe auf die <strong>🔔 Glocke</strong> oben rechts</li>
+          <li>Der Browser fragt nach Erlaubnis — auf <strong>„Zulassen"</strong> klicken</li>
+          <li>Die Glocke leuchtet auf — Benachrichtigungen sind aktiv ✅</li>
+        </ol>
+        <p><strong>Falls der Browser Benachrichtigungen blockiert:</strong><br>
+        Klicke auf das 🔒 Schloss in der Adressleiste → Benachrichtigungen → Zulassen</p>
+
+        <hr>
+
+        <h3>🍎 iPhone / iPad (Safari)</h3>
+        <p>Safari unterstützt Web-Push nur ab iOS 16.4 und nur wenn die App auf dem Homescreen installiert ist:</p>
+        <ol>
+          <li>Seite in Safari öffnen</li>
+          <li>Teilen-Symbol → <strong>„Zum Home-Bildschirm"</strong></li>
+          <li>App vom Homescreen öffnen</li>
+          <li>Auf 🔔 tippen → <strong>„Erlauben"</strong></li>
+        </ol>
+
+        <hr>
+
+        <h3>🔕 Benachrichtigungen wieder deaktivieren</h3>
+        <p>Einfach nochmal auf die <strong>🔔 Glocke</strong> tippen — sie wird dann deaktiviert.</p>
+      </div>
+    </div>
+  </div>
   <div id="install-banner" class="install-banner hidden">
     <span>📲 App auf dem Homescreen installieren</span>
     <button id="install-btn">Installieren</button>

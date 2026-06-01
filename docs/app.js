@@ -135,7 +135,15 @@ document.getElementById('btn-back').addEventListener('click',()=>{
 // Zoom (nur Desktop)
 let currentZoom = 1;
 function setZoom(z) {
+  const strip = document.getElementById('pdf-strip');
+  const oldZoom = currentZoom;
   currentZoom = Math.min(3, Math.max(0.5, Math.round(z * 4) / 4));
+  const ratio = currentZoom / oldZoom;
+
+  // Sichtbare Mitte vor dem Zoom merken
+  const cx = strip ? (strip.scrollLeft + strip.clientWidth  / 2) * ratio - strip.clientWidth  / 2 : 0;
+  const cy = strip ? (strip.scrollTop  + strip.clientHeight / 2) * ratio - strip.clientHeight / 2 : 0;
+
   document.querySelectorAll('.pdf-page').forEach(img => {
     const bw = parseFloat(img.dataset.baseW);
     const bh = parseFloat(img.dataset.baseH);
@@ -144,8 +152,12 @@ function setZoom(z) {
       img.style.height = (bh * currentZoom) + 'px';
     }
   });
-  const strip = document.getElementById('pdf-strip');
-  if (strip) { strip.scrollTop = 0; strip.scrollLeft = 0; }
+
+  // Scroll so setzen dass man am selben Inhalt bleibt
+  if (strip) {
+    strip.scrollLeft = Math.max(0, cx);
+    strip.scrollTop  = Math.max(0, cy);
+  }
   const el = document.getElementById('zoom-level');
   if (el) el.textContent = Math.round(currentZoom * 100) + '%';
 }

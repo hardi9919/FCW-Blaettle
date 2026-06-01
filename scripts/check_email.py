@@ -71,8 +71,9 @@ def process_emails():
         find_parts(msg["payload"].get("parts", [msg["payload"]]))
         service.users().messages().modify(userId="me", id=msg_ref["id"],
             body={"removeLabelIds": ["UNREAD"]}).execute()
+    # Titel fuer spaetere Push-Benachrichtigung ausgeben
     for issue in new_issues:
-        send_push(issue["title"])
+        print(f"PUSH_TITLE:{issue['title']}")
     print(f"{len(new_issues)} neue Ausgabe(n).")
 
 if __name__ == "__main__":

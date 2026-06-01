@@ -136,7 +136,7 @@ document.getElementById('btn-back').addEventListener('click',()=>{
 let currentZoom = 1;
 function setZoom(z) {
   currentZoom = Math.min(3, Math.max(0.5, Math.round(z * 4) / 4));
-  // Alle Seiten skalieren
+  const strip = document.getElementById('pdf-strip');
   document.querySelectorAll('.pdf-page').forEach(img => {
     const bw = parseFloat(img.dataset.baseW);
     const bh = parseFloat(img.dataset.baseH);
@@ -145,6 +145,8 @@ function setZoom(z) {
       img.style.height = (bh * currentZoom) + 'px';
     }
   });
+  // Nach Zoom immer an den Anfang scrollen
+  if (strip) { strip.scrollTop = 0; strip.scrollLeft = 0; }
   const el = document.getElementById('zoom-level');
   if (el) el.textContent = Math.round(currentZoom * 100) + '%';
 }

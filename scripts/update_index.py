@@ -2,7 +2,7 @@
 import json, re
 from pathlib import Path
 
-PDF_DIR    = Path("public/pdfs")
+PDF_DIR    = Path("docs/pdfs")
 INDEX_FILE = PDF_DIR / "index.json"
 
 def get_date(fn):

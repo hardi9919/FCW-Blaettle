@@ -35,7 +35,7 @@ jobs:
         run: |
           git config user.name  "FCW Bot"
           git config user.email "bot@fcweisingen.de"
-          git add public/pdfs/
+          git add docs/pdfs/
           if git diff --staged --quiet; then
             echo "Keine neuen PDFs."
           else

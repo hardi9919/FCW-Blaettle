@@ -6,7 +6,7 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 import requests
 
-PDF_DIR = Path("public/pdfs")
+PDF_DIR = Path("docs/pdfs")
 PDF_DIR.mkdir(parents=True, exist_ok=True)
 ONESIGNAL_APP_ID  = os.environ.get("ONESIGNAL_APP_ID", "")
 ONESIGNAL_API_KEY = os.environ.get("ONESIGNAL_API_KEY", "")

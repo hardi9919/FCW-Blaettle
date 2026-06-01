@@ -32,7 +32,10 @@ jobs:
           if git diff --staged --quiet; then
             echo "index.json unveraendert."
           else
-            git commit -m "index.json synchronisiert [automatisch]"
+            git stash
             git pull --rebase
+            git stash pop
+            git add docs/pdfs/index.json
+            git commit -m "index.json synchronisiert [automatisch]"
             git push
           fi

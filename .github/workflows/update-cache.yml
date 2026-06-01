@@ -1,0 +1,40 @@
+﻿name: Cache bei Code-Update aktualisieren
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/index.html'
+      - 'docs/style.css'
+      - 'docs/app.js'
+      - 'docs/manifest.json'
+      - 'docs/icons/**'
+
+permissions:
+  contents: write
+
+jobs:
+  update-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Cache-Version in sw.js aktualisieren
+        run: |
+          TIMESTAMP=$(date +%s)
+          sed -i "s/fcw-blaettle-v[0-9]*/fcw-blaettle-v${TIMESTAMP}/" docs/sw.js
+          echo "Neue Cache-Version: fcw-blaettle-v${TIMESTAMP}"
+
+      - name: Committen und pushen
+        run: |
+          git config user.name  "FCW Bot"
+          git config user.email "bot@fcweisingen.de"
+          git add docs/sw.js
+          if git diff --staged --quiet; then
+            echo "Keine Aenderung noetig."
+          else
+            git commit -m "Cache-Version aktualisiert nach Code-Update [automatisch]"
+            git push
+          fi

@@ -4,6 +4,15 @@ on:
   schedule:
     - cron: "*/15 * * * *"
   workflow_dispatch:
+    inputs:
+      push_senden:
+        description: "Push-Benachrichtigung senden?"
+        required: false
+        default: "ja"
+        type: choice
+        options:
+          - "ja"
+          - "nein (nur testen)"
 
 permissions:
   contents: write
@@ -50,11 +59,13 @@ jobs:
             TIMESTAMP=$(date +%s)
             sed -i "s/BUILD: [0-9]*/BUILD: ${TIMESTAMP}/" docs/sw.js
             git add docs/sw.js
-            # Titel fuer spaetere Benachrichtigung speichern
-            TITLE="${{ steps.check_email.outputs.push_titles }}"
-            CLEAN=$(echo "$TITLE" | sed 's/|.*//')
-            echo "$CLEAN" > docs/pending_push.txt
-            git add docs/pending_push.txt
+            PUSH_OPT="${{ github.event.inputs.push_senden }}"
+            if [ "$PUSH_OPT" != "nein (nur testen)" ]; then
+              TITLE="${{ steps.check_email.outputs.push_titles }}"
+              CLEAN=$(echo "$TITLE" | sed 's/|.*//')
+              echo "$CLEAN" > docs/pending_push.txt
+              git add docs/pending_push.txt
+            fi
             git commit -m "Neue Ausgabe hinzugefuegt [automatisch]"
             git push
             echo "has_changes=true" >> $GITHUB_OUTPUT

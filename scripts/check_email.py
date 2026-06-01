@@ -35,8 +35,8 @@ def send_push(title):
     res = requests.post("https://onesignal.com/api/v1/notifications",
         headers={"Authorization": f"Key {ONESIGNAL_API_KEY}", "Content-Type": "application/json"},
         json={"app_id": ONESIGNAL_APP_ID, "included_segments": ["All"],
-              "headings": {"de": "FCW-Blaettle"}, "url": GITHUB_PAGES_URL,
-              "contents": {"de": f"Neue Ausgabe: {title} ist jetzt verfuegbar!"}}, timeout=15)
+              "headings": {"en": "FCW-Blaettle", "de": "FCW-Blaettle"}, "url": GITHUB_PAGES_URL,
+              "contents": {"en": f"Neue Ausgabe: {title}", "de": f"Neue Ausgabe: {title} ist jetzt verfuegbar!"}}, timeout=15)
     print(f"  Push Status: {res.status_code} | Antwort: {res.text}")
 
 def process_emails():

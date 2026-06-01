@@ -42,7 +42,7 @@ def send_push(title):
 def process_emails():
     service = get_gmail_service()
     results = service.users().messages().list(
-        userId="me", q="is:unread has:attachment filename:pdf", maxResults=10).execute()
+        userId="me", q="is:unread has:attachment filename:pdf label:FCW/FCW-Blaettle", maxResults=10).execute()
     messages = results.get("messages", [])
     if not messages: print("Keine neuen E-Mails."); return
     new_issues = []

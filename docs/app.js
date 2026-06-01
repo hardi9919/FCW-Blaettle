@@ -39,7 +39,13 @@ if ('serviceWorker' in navigator) {
 
 window.OneSignalDeferred=window.OneSignalDeferred||[];
 OneSignalDeferred.push(async(O)=>{
-  await O.init({appId:CONFIG.oneSignalAppId,notifyButton:{enable:false},allowLocalhostAsSecureOrigin:true});
+  await O.init({
+    appId: CONFIG.oneSignalAppId,
+    notifyButton: { enable: false },
+    allowLocalhostAsSecureOrigin: true,
+    serviceWorkerPath: 'OneSignalSDKWorker.js',
+    serviceWorkerParam: { scope: '/FCW-Blaettle/' },
+  });
 });
 
 document.getElementById('notif-btn').addEventListener('click',async()=>{

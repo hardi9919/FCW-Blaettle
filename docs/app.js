@@ -125,13 +125,22 @@ document.getElementById('btn-back').addEventListener('click',()=>{
 let currentZoom = 1;
 function setZoom(z) {
   currentZoom = Math.min(3, Math.max(0.5, Math.round(z * 4) / 4));
-  document.getElementById('pdf-strip').style.zoom = currentZoom;
-  document.getElementById('zoom-level').textContent = Math.round(currentZoom * 100) + '%';
+  // Alle Seiten skalieren
+  document.querySelectorAll('.pdf-page').forEach(img => {
+    const bw = parseFloat(img.dataset.baseW);
+    const bh = parseFloat(img.dataset.baseH);
+    if (bw && bh) {
+      img.style.width  = (bw * currentZoom) + 'px';
+      img.style.height = (bh * currentZoom) + 'px';
+    }
+  });
+  const el = document.getElementById('zoom-level');
+  if (el) el.textContent = Math.round(currentZoom * 100) + '%';
 }
 document.getElementById('zoom-in') .addEventListener('click', () => setZoom(currentZoom + 0.25));
 document.getElementById('zoom-out').addEventListener('click', () => setZoom(currentZoom - 0.25));
 
-// Mausrad-Zoom auf Desktop
+// Strg + Mausrad zum Zoomen
 document.getElementById('pdf-strip').addEventListener('wheel', (e) => {
   if (!e.ctrlKey) return;
   e.preventDefault();
@@ -217,9 +226,11 @@ async function renderPdfStrip(pdfUrl){
     img.src=canvas.toDataURL('image/jpeg',0.93);
     img.className='pdf-page';
     img.dataset.page=i;
-    // CSS-Groesse: Seite exakt so gross wie sie auf dem Screen erscheinen soll
     const dispW=Math.round(vp0.width*displayScale);
     const dispH=Math.round(vp0.height*displayScale);
+    // Basisgroesse fuer Zoom merken
+    img.dataset.baseW=dispW;
+    img.dataset.baseH=dispH;
     img.style.width=dispW+'px';
     img.style.height=dispH+'px';
     strip.appendChild(img);

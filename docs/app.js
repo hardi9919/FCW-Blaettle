@@ -146,17 +146,18 @@ async function renderPdfStrip(pdfUrl){
   const strip=document.getElementById('pdf-strip');
   strip.innerHTML='';
 
-  // Hoehe des Strips bestimmen
-  const stripH=strip.clientHeight||window.innerHeight-168;
+  // Verfuegbare Breite und Hoehe des Strips
+  const stripW=strip.clientWidth  || window.innerWidth;
+  const stripH=strip.clientHeight || window.innerHeight-168;
 
-  // Hoehere Aufloesung fuer scharfen Zoom (2x Bildschirmaufloesung)
+  // Hoehere Aufloesung fuer scharfen Zoom
   const dpr=Math.min(window.devicePixelRatio||1, 3);
 
   for(let i=1;i<=totalPages;i++){
     const page=await pdf.getPage(i);
     const vp0=page.getViewport({scale:1});
-    // Anzeigeskalierung: Seite fuellt Strip-Hoehe
-    const displayScale=stripH/vp0.height;
+    // Fit-to-screen: Seite passt komplett in Breite UND Hoehe
+    const displayScale=Math.min(stripW/vp0.width, stripH/vp0.height);
     // Renderaufloesung: dpr-fach hoeher fuer scharfen Pinch-Zoom
     const renderScale=displayScale*dpr;
     const vp=page.getViewport({scale:renderScale});
@@ -167,9 +168,11 @@ async function renderPdfStrip(pdfUrl){
     img.src=canvas.toDataURL('image/jpeg',0.93);
     img.className='pdf-page';
     img.dataset.page=i;
-    // CSS-Groesse: wird auf Anzeigegroesse gesetzt, Zoom enthuellt die Extra-Pixel
-    img.style.height=stripH+'px';
-    img.style.width='auto';
+    // CSS-Groesse: Seite exakt so gross wie sie auf dem Screen erscheinen soll
+    const dispW=Math.round(vp0.width*displayScale);
+    const dispH=Math.round(vp0.height*displayScale);
+    img.style.width=dispW+'px';
+    img.style.height=dispH+'px';
     strip.appendChild(img);
   }
 

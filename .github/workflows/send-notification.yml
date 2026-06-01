@@ -56,5 +56,5 @@ jobs:
           git config user.email "bot@fcweisingen.de"
           git pull --rebase
           git rm docs/pending_push.txt
-          git commit -m "Push-Benachrichtigung gesendet [automatisch]"
+          git commit -m "Push-Benachrichtigung gesendet [skip ci]"
           git push

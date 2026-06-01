@@ -50,21 +50,12 @@ jobs:
             TIMESTAMP=$(date +%s)
             sed -i "s/BUILD: [0-9]*/BUILD: ${TIMESTAMP}/" docs/sw.js
             git add docs/sw.js
+            # Titel fuer spaetere Benachrichtigung speichern
+            TITLE="${{ steps.check_email.outputs.push_titles }}"
+            CLEAN=$(echo "$TITLE" | sed 's/|.*//')
+            echo "$CLEAN" > docs/pending_push.txt
+            git add docs/pending_push.txt
             git commit -m "Neue Ausgabe hinzugefuegt [automatisch]"
             git push
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
-
-      - name: Warten bis GitHub Pages deployed ist
-        if: steps.commit.outputs.has_changes == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python scripts/wait_deploy.py
-
-      - name: Push-Benachrichtigung senden
-        if: steps.commit.outputs.has_changes == 'true'
-        env:
-          ONESIGNAL_APP_ID:  ${{ secrets.ONESIGNAL_APP_ID }}
-          ONESIGNAL_API_KEY: ${{ secrets.ONESIGNAL_API_KEY }}
-          PUSH_TITLES:       ${{ steps.check_email.outputs.push_titles }}
-        run: python scripts/send_push.py

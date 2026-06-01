@@ -1,5 +1,5 @@
 ﻿/* FCW-Blaettle - Service Worker */
-/* BUILD: 0 */
+/* BUILD: 1780303791 */
 const PDF_CACHE = 'fcw-pdfs-v1';
 
 /* Sofort aktivieren – kein Warten */

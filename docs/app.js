@@ -208,16 +208,15 @@ async function renderPdfStrip(pdfUrl){
   const stripW=strip.clientWidth  || window.innerWidth;
   const stripH=strip.clientHeight || window.innerHeight-168;
 
-  // Hoehere Aufloesung fuer scharfen Zoom
-  const dpr=Math.min(window.devicePixelRatio||1, 3);
+  // 3x Renderaufloesung: scharfer Zoom bis 300% ohne Qualitaetsverlust
+  const renderFactor = 3;
 
   for(let i=1;i<=totalPages;i++){
     const page=await pdf.getPage(i);
     const vp0=page.getViewport({scale:1});
     // Fit-to-screen: Seite passt komplett in Breite UND Hoehe
     const displayScale=Math.min(stripW/vp0.width, stripH/vp0.height);
-    // Renderaufloesung: dpr-fach hoeher fuer scharfen Pinch-Zoom
-    const renderScale=displayScale*dpr;
+    const renderScale=displayScale*renderFactor;
     const vp=page.getViewport({scale:renderScale});
     const canvas=document.createElement('canvas');
     canvas.width=vp.width; canvas.height=vp.height;
@@ -246,6 +245,22 @@ async function renderPdfStrip(pdfUrl){
     const cur=Math.round(strip.scrollLeft/pageW)+1;
     document.getElementById('page-info').textContent='Seite '+Math.min(cur,totalPages)+' / '+totalPages;
   },{passive:true});
+
+  // Maus-Drag zum Verschieben (Desktop)
+  let isDragging=false, dragStartX=0, dragStartY=0, dragScrollX=0, dragScrollY=0;
+  strip.addEventListener('mousedown',(e)=>{
+    isDragging=true;
+    dragStartX=e.clientX; dragStartY=e.clientY;
+    dragScrollX=strip.scrollLeft; dragScrollY=strip.scrollTop;
+    strip.style.cursor='grabbing';
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove',(e)=>{
+    if(!isDragging)return;
+    strip.scrollLeft=dragScrollX-(e.clientX-dragStartX);
+    strip.scrollTop =dragScrollY-(e.clientY-dragStartY);
+  });
+  window.addEventListener('mouseup',()=>{ isDragging=false; strip.style.cursor='grab'; });
 
   // Navigations-Buttons (Desktop)
   function scrollToPage(dir){

@@ -72,13 +72,13 @@ if not deps: print('pending'); exit()
 dep_id = deps[0]['id']
 token = os.environ['GH_TOKEN']
 req = urllib.request.Request(
-  f'https://api.github.com/repos/hardi9919/FCW-Blaettle/deployments/{dep_id}/statuses?per_page=1',
-  headers={'Authorization': f'Bearer {token}', 'Accept': 'application/vnd.github+json'}
+  'https://api.github.com/repos/hardi9919/FCW-Blaettle/deployments/' + str(dep_id) + '/statuses?per_page=1',
+  headers={'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json'}
 )
 statuses = json.loads(urllib.request.urlopen(req).read())
 print(statuses[0]['state'] if statuses else 'pending')
 ")
-            echo "Status ($i/24): $STATUS"
+            echo "Status ($i/12): $STATUS"
             if [ "$STATUS" = "success" ]; then
               echo "GitHub Pages ist live!"
               break
@@ -91,19 +91,4 @@ print(statuses[0]['state'] if statuses else 'pending')
           ONESIGNAL_APP_ID:  ${{ secrets.ONESIGNAL_APP_ID }}
           ONESIGNAL_API_KEY: ${{ secrets.ONESIGNAL_API_KEY }}
           PUSH_TITLES:       ${{ steps.check_email.outputs.push_titles }}
-        run: |
-          python - << 'EOF'
-          import os, requests
-          app_id  = os.environ["ONESIGNAL_APP_ID"]
-          api_key = os.environ["ONESIGNAL_API_KEY"]
-          url     = "https://hardi9919.github.io/FCW-Blaettle/"
-          titles  = [t for t in os.environ.get("PUSH_TITLES","").split("|") if t.strip()]
-          title   = titles[0] if titles else "Neue Ausgabe"
-          res = requests.post("https://onesignal.com/api/v1/notifications",
-              headers={"Authorization": f"Key {api_key}", "Content-Type": "application/json"},
-              json={"app_id": app_id, "included_segments": ["All"],
-                    "headings": {"en": "FCW-Blaettle", "de": "FCW-Blaettle"}, "url": url,
-                    "contents": {"en": f"Neue Ausgabe: {title}", "de": f"Neue Ausgabe: {title} ist jetzt verfuegbar!"}},
-              timeout=15)
-          print(f"Push Status: {res.status_code} | {res.text}")
-          EOF
+        run: python scripts/send_push.py

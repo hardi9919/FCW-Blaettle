@@ -1,5 +1,5 @@
 ﻿/* FCW-Blaettle - App Logic */
-const CONFIG = { oneSignalAppId: 'DEINE-ONESIGNAL-APP-ID', pdfListUrl: 'pdfs/index.json' };
+const CONFIG = { oneSignalAppId: '5e6a5c8a-eb23-46a0-b26f-f806ad6d109f', pdfListUrl: 'pdfs/index.json' };
 let allIssues=[], totalPages=0;
 
 if ('serviceWorker' in navigator) {

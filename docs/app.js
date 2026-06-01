@@ -253,11 +253,15 @@ async function renderPdfStrip(pdfUrl){
   strip.scrollLeft=0; strip.scrollTop=0;
   document.getElementById('page-info').textContent='Seite 1 / '+totalPages;
   strip.addEventListener('scroll',()=>{
-    const first=wrapper.firstElementChild;
-    if(!first)return;
-    const pageW=first.clientWidth+6;
-    if(pageW===0)return;
-    const cur=Math.round(strip.scrollLeft/pageW)+1;
+    const pages=wrapper.querySelectorAll('.pdf-page');
+    if(!pages.length)return;
+    const stripRect=strip.getBoundingClientRect();
+    const stripMid=stripRect.left+stripRect.width/2;
+    let cur=1;
+    pages.forEach((pg,i)=>{
+      const r=pg.getBoundingClientRect();
+      if(r.left<=stripMid) cur=i+1;
+    });
     document.getElementById('page-info').textContent='Seite '+Math.min(cur,totalPages)+' / '+totalPages;
   },{passive:true});
 

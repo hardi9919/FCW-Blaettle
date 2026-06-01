@@ -10,20 +10,28 @@ self.addEventListener('activate',(e)=>{
   e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))));
   self.clients.claim();
 });
+function networkFirst(e){
+  return fetch(e.request).then(res=>{
+    const c=res.clone();
+    caches.open(CACHE_NAME).then(ca=>ca.put(e.request,c));
+    return res;
+  }).catch(()=>caches.match(e.request));
+}
+function cacheFirst(e){
+  return caches.match(e.request).then(cached=>{
+    if(cached)return cached;
+    return fetch(e.request).then(res=>{const c=res.clone();caches.open(CACHE_NAME).then(ca=>ca.put(e.request,c));return res;});
+  });
+}
 self.addEventListener('fetch',(e)=>{
   const url=new URL(e.request.url);
-  if(url.pathname.endsWith('index.json')){
-    e.respondWith(fetch(e.request).then(res=>{const c=res.clone();caches.open(CACHE_NAME).then(ca=>ca.put(e.request,c));return res;}).catch(()=>caches.match(e.request)));
-    return;
+  // PDFs: Cache-first (gross, sollen offline verfuegbar bleiben)
+  if(url.pathname.endsWith('.pdf')){ e.respondWith(cacheFirst(e)); return; }
+  // App-Dateien: Network-first (immer aktuell wenn online)
+  if(url.pathname.match(/\.(html|js|css|json|png|ico)$/) || url.pathname.endsWith('/')){
+    e.respondWith(networkFirst(e)); return;
   }
-  if(url.pathname.endsWith('.pdf')){
-    e.respondWith(caches.match(e.request).then(cached=>{
-      if(cached)return cached;
-      return fetch(e.request).then(res=>{const c=res.clone();caches.open(CACHE_NAME).then(ca=>ca.put(e.request,c));return res;});
-    }));
-    return;
-  }
-  e.respondWith(caches.match(e.request).then(cached=>cached||fetch(e.request)));
+  e.respondWith(networkFirst(e));
 });
 self.addEventListener('message',(e)=>{
   if(e.data?.type==='SKIP_WAITING') self.skipWaiting();

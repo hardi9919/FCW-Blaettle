@@ -2,7 +2,23 @@
 const CONFIG = { oneSignalAppId: 'DEINE-ONESIGNAL-APP-ID', pdfListUrl: 'pdfs/index.json' };
 let allIssues=[], pageFlip=null, totalPages=0;
 
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(console.error);
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').then(reg => {
+    // Neuen Service Worker erkennen und automatisch aktivieren
+    reg.addEventListener('updatefound', () => {
+      const newSW = reg.installing;
+      newSW.addEventListener('statechange', () => {
+        if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+          // Neuer Inhalt verfuegbar – Seite automatisch neu laden
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            window.location.reload();
+          });
+          newSW.postMessage({ type: 'SKIP_WAITING' });
+        }
+      });
+    });
+  }).catch(console.error);
+}
 
 window.OneSignalDeferred=window.OneSignalDeferred||[];
 OneSignalDeferred.push(async(O)=>{

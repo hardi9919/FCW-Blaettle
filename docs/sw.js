@@ -1,4 +1,5 @@
 ﻿/* FCW-Blaettle - Service Worker */
+/* CACHE_VERSION wird automatisch vom GitHub Actions Workflow aktualisiert */
 const CACHE_NAME='fcw-blaettle-v1';
 const STATIC=['/','/index.html','/style.css','/app.js','/manifest.json','/icons/icon-192.png','/icons/icon-512.png'];
 self.addEventListener('install',(e)=>{
@@ -23,6 +24,9 @@ self.addEventListener('fetch',(e)=>{
     return;
   }
   e.respondWith(caches.match(e.request).then(cached=>cached||fetch(e.request)));
+});
+self.addEventListener('message',(e)=>{
+  if(e.data?.type==='SKIP_WAITING') self.skipWaiting();
 });
 self.addEventListener('push',(e)=>{
   const data=e.data?.json()||{};

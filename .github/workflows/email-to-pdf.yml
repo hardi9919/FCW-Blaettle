@@ -42,6 +42,10 @@ jobs:
           if git diff --staged --quiet; then
             echo "Keine neuen PDFs."
           else
+            # Cache-Version in sw.js aktualisieren damit Browser automatisch neu laden
+            TIMESTAMP=$(date +%s)
+            sed -i "s/fcw-blaettle-v[0-9]*/fcw-blaettle-v${TIMESTAMP}/" docs/sw.js
+            git add docs/sw.js
             git commit -m "Neue Ausgabe hinzugefuegt [automatisch]"
             git push
           fi

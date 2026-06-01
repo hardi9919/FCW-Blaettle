@@ -217,7 +217,7 @@ async function renderPdfStrip(pdfUrl){
   const wrapper=document.createElement('div');
   // Zentrierung-Container: zentriert Inhalt wenn kleiner als Strip (Rauszoomen)
   const centerer=document.createElement('div');
-  centerer.style.cssText='min-width:100%;min-height:100%;display:flex;align-items:center;justify-content:center;';
+  centerer.style.cssText='min-width:100%;min-height:100%;display:flex;align-items:center;';
   strip.appendChild(centerer);
 
   wrapper.id='pages-wrapper';

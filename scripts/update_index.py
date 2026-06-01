@@ -15,7 +15,8 @@ def make_title(fn):
     return name.replace("_"," ").replace("-"," ").strip().title() or "FCW-Blaettle"
 
 def build_index():
-    pdfs = sorted(PDF_DIR.glob("*.pdf"), key=lambda p: get_date(p.name), reverse=True)
+    # Sortierung: zuerst nach Datum, bei gleichem Datum nach Aenderungszeit (neueste zuerst)
+    pdfs = sorted(PDF_DIR.glob("*.pdf"), key=lambda p: (get_date(p.name), p.stat().st_mtime), reverse=True)
     issues = [{"id": p.stem, "title": make_title(p.name), "date": get_date(p.name),
                "filename": p.name, "url": f"pdfs/{p.name}"} for p in pdfs]
     INDEX_FILE.write_text(json.dumps(issues, ensure_ascii=False, indent=2), encoding="utf-8")

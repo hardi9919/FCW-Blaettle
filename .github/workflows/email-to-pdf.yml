@@ -1,4 +1,4 @@
-﻿name: E-Mail zu PDF verarbeiten
+name: E-Mail zu PDF verarbeiten
 
 on:
   schedule:

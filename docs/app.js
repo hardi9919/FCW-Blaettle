@@ -215,9 +215,14 @@ async function renderPdfStrip(pdfUrl){
 
   // Innerer Wrapper: bestimmt die scrollbare Flaeche exakt
   const wrapper=document.createElement('div');
+  // Zentrierung-Container: zentriert Inhalt wenn kleiner als Strip (Rauszoomen)
+  const centerer=document.createElement('div');
+  centerer.style.cssText='min-width:100%;min-height:100%;display:flex;align-items:center;justify-content:center;';
+  strip.appendChild(centerer);
+
   wrapper.id='pages-wrapper';
-  wrapper.style.cssText='display:inline-flex;flex-direction:row;gap:6px;min-height:100%;align-items:flex-start;padding:0;';
-  strip.appendChild(wrapper);
+  wrapper.style.cssText='display:inline-flex;flex-direction:row;gap:6px;align-items:flex-start;padding:0;';
+  centerer.appendChild(wrapper);
 
   // 3x Renderaufloesung: scharfer Zoom bis 300% ohne Qualitaetsverlust
   const renderFactor = 3;

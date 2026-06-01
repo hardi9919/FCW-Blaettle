@@ -33,5 +33,6 @@ jobs:
             echo "index.json unveraendert."
           else
             git commit -m "index.json synchronisiert [automatisch]"
+            git pull --rebase
             git push
           fi

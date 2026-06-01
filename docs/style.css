@@ -67,36 +67,64 @@ main:has(#view-reader.active) {
 .reader-title { flex: 1; font-weight: 700; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .page-info { font-size: 0.8rem; color: #888; white-space: nowrap; }
 
+/* Zoom-Buttons (nur Desktop) */
+.zoom-controls {
+  display: none;
+  gap: 4px;
+  align-items: center;
+}
+.zoom-btn {
+  background: var(--red);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  transition: background 0.2s;
+}
+.zoom-btn:hover { background: var(--red-dk); }
+.zoom-level { font-size: 0.8rem; color: #888; min-width: 36px; text-align: center; }
+
 /* Strip Wrapper mit Navigations-Buttons */
 .strip-wrap {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+  position: relative;
   flex: 1;
   overflow: hidden;
   min-height: 0;
 }
 .flip-nav {
   display: none; /* Mobil: ausgeblendet */
-  background: var(--red);
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(204,0,0,0.85);
   color: white;
   border: none;
   border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  font-size: 1.8rem;
+  width: 56px;
+  height: 56px;
+  font-size: 2.2rem;
   cursor: pointer;
-  flex-shrink: 0;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.2s;
   align-items: center;
   justify-content: center;
-  z-index: 10;
+  z-index: 20;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
-.flip-nav:hover { background: var(--red-dk); }
+.flip-nav.left  { left:  12px; }
+.flip-nav.right { right: 12px; }
+.flip-nav:hover { background: var(--red-dk); transform: translateY(-50%) scale(1.08); }
 
 /* Desktop: Buttons anzeigen */
 @media (min-width: 768px) {
   .flip-nav { display: flex; }
+  .zoom-controls { display: flex; }
 }
 
 /* PDF Strip Viewer */

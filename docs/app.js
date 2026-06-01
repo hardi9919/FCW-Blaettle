@@ -117,8 +117,26 @@ function showView(name){
 document.querySelectorAll('.nav-item').forEach(btn=>btn.addEventListener('click',()=>showView(btn.dataset.view)));
 document.getElementById('btn-back').addEventListener('click',()=>{
   document.getElementById('pdf-strip').innerHTML='';
+  setZoom(1);
   showView('archive');
 });
+
+// Zoom (nur Desktop)
+let currentZoom = 1;
+function setZoom(z) {
+  currentZoom = Math.min(3, Math.max(0.5, Math.round(z * 4) / 4));
+  document.getElementById('pdf-strip').style.zoom = currentZoom;
+  document.getElementById('zoom-level').textContent = Math.round(currentZoom * 100) + '%';
+}
+document.getElementById('zoom-in') .addEventListener('click', () => setZoom(currentZoom + 0.25));
+document.getElementById('zoom-out').addEventListener('click', () => setZoom(currentZoom - 0.25));
+
+// Mausrad-Zoom auf Desktop
+document.getElementById('pdf-strip').addEventListener('wheel', (e) => {
+  if (!e.ctrlKey) return;
+  e.preventDefault();
+  setZoom(currentZoom + (e.deltaY < 0 ? 0.25 : -0.25));
+}, { passive: false });
 
 async function loadIssues(){
   try{ const res=await fetch(CONFIG.pdfListUrl+'?t='+Date.now()); allIssues=await res.json(); }

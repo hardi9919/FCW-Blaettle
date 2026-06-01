@@ -30,12 +30,14 @@ main { max-width: 700px; margin: 0 auto; padding: 16px 16px 80px; min-height: ca
 .view { display: none; }
 .view.active { display: block; }
 
-/* Reader-Ansicht: volle Hoehe nutzen, Toolbar + Strip uebereinander */
+/* Reader-Ansicht: main-Padding aufheben, volle Hoehe nutzen */
+main:has(#view-reader.active) {
+  padding: 0;
+}
 #view-reader.active {
   display: flex;
   flex-direction: column;
   height: calc(100vh - 64px - 60px);
-  padding: 0;
   overflow: hidden;
 }
 #view-reader .reader-toolbar {
@@ -76,8 +78,8 @@ main { max-width: 700px; margin: 0 auto; padding: 16px 16px 80px; min-height: ca
   touch-action: pan-x pan-y pinch-zoom;
   -webkit-overflow-scrolling: touch;
   background: #333;
-  gap: 6px;             /* sichtbarer Abstand zwischen Seiten */
-  padding: 0 6px;
+  gap: 6px;             /* sichtbarer Abstand nur zwischen Seiten, nicht aussen */
+  padding: 0;
   align-items: center;
 }
 .pdf-strip::-webkit-scrollbar { display: none; }

@@ -59,31 +59,7 @@ jobs:
         if: steps.commit.outputs.has_changes == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "Warte auf GitHub Pages Deployment..."
-          for i in $(seq 1 12); do
-            sleep 15
-            STATUS=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
-              "https://api.github.com/repos/hardi9919/FCW-Blaettle/deployments?environment=github-pages&per_page=1" \
-              | python3 -c "
-import sys, json, urllib.request, os
-deps = json.load(sys.stdin)
-if not deps: print('pending'); exit()
-dep_id = deps[0]['id']
-token = os.environ['GH_TOKEN']
-req = urllib.request.Request(
-  'https://api.github.com/repos/hardi9919/FCW-Blaettle/deployments/' + str(dep_id) + '/statuses?per_page=1',
-  headers={'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json'}
-)
-statuses = json.loads(urllib.request.urlopen(req).read())
-print(statuses[0]['state'] if statuses else 'pending')
-")
-            echo "Status ($i/12): $STATUS"
-            if [ "$STATUS" = "success" ]; then
-              echo "GitHub Pages ist live!"
-              break
-            fi
-          done
+        run: python scripts/wait_deploy.py
 
       - name: Push-Benachrichtigung senden
         if: steps.commit.outputs.has_changes == 'true'

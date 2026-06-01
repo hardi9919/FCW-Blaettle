@@ -1,0 +1,37 @@
+﻿name: PDF-Index synchronisieren
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/pdfs/**.pdf'   # Nur wenn PDFs geaendert/geloescht werden
+
+permissions:
+  contents: write
+
+jobs:
+  sync-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: index.json aktualisieren
+        run: python scripts/update_index.py
+
+      - name: Committen und pushen
+        run: |
+          git config user.name  "FCW Bot"
+          git config user.email "bot@fcweisingen.de"
+          git add docs/pdfs/index.json
+          if git diff --staged --quiet; then
+            echo "index.json unveraendert."
+          else
+            git commit -m "index.json synchronisiert [automatisch]"
+            git push
+          fi

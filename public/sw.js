@@ -1,0 +1,45 @@
+﻿/* FCW-Blaettle - Service Worker */
+const CACHE_NAME='fcw-blaettle-v1';
+const STATIC=['/','/index.html','/style.css','/app.js','/manifest.json','/icons/icon-192.png','/icons/icon-512.png'];
+self.addEventListener('install',(e)=>{
+  e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(STATIC)));
+  self.skipWaiting();
+});
+self.addEventListener('activate',(e)=>{
+  e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))));
+  self.clients.claim();
+});
+self.addEventListener('fetch',(e)=>{
+  const url=new URL(e.request.url);
+  if(url.pathname.endsWith('index.json')){
+    e.respondWith(fetch(e.request).then(res=>{const c=res.clone();caches.open(CACHE_NAME).then(ca=>ca.put(e.request,c));return res;}).catch(()=>caches.match(e.request)));
+    return;
+  }
+  if(url.pathname.endsWith('.pdf')){
+    e.respondWith(caches.match(e.request).then(cached=>{
+      if(cached)return cached;
+      return fetch(e.request).then(res=>{const c=res.clone();caches.open(CACHE_NAME).then(ca=>ca.put(e.request,c));return res;});
+    }));
+    return;
+  }
+  e.respondWith(caches.match(e.request).then(cached=>cached||fetch(e.request)));
+});
+self.addEventListener('push',(e)=>{
+  const data=e.data?.json()||{};
+  e.waitUntil(self.registration.showNotification(data.title||'FCW-Blaettle',{
+    body:data.body||'Neue Ausgabe verfuegbar!',
+    icon:data.icon||'/icons/icon-192.png',
+    badge:'/icons/icon-192.png',
+    data:{url:data.url||'/'},
+    vibrate:[200,100,200]
+  }));
+});
+self.addEventListener('notificationclick',(e)=>{
+  e.notification.close();
+  const url=e.notification.data?.url||'/';
+  e.waitUntil(clients.matchAll({type:'window',includeUncontrolled:true}).then(wins=>{
+    const ex=wins.find(w=>w.url.includes(self.location.origin));
+    if(ex)return ex.focus();
+    return clients.openWindow(url);
+  }));
+});

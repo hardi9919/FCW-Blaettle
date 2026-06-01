@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FCW-Blättle</title>
+  <meta name="description" content="Das digitale Stadionheft des FC Weisingen 1921" />
+  <meta name="theme-color" content="#CC0000" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="FCW-Blättle" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <img src="icons/icon-192.png" alt="FCW Logo" class="header-logo" />
+      <div class="header-text">
+        <h1>FCW-Blättle</h1>
+        <span>FC Weisingen 1921</span>
+      </div>
+      <button id="notif-btn" class="notif-btn" title="Benachrichtigungen aktivieren">🔔</button>
+    </div>
+  </header>
+  <div id="install-banner" class="install-banner hidden">
+    <span>📲 App auf dem Homescreen installieren</span>
+    <button id="install-btn">Installieren</button>
+    <button id="install-close">✕</button>
+  </div>
+  <main>
+    <section id="view-archive" class="view active">
+      <h2 class="section-title">Alle Ausgaben</h2>
+      <div id="archive-grid" class="archive-grid">
+        <div class="loading-spinner">⏳ Lade Ausgaben…</div>
+      </div>
+    </section>
+    <section id="view-reader" class="view">
+      <div class="reader-toolbar">
+        <button id="btn-back" class="btn-icon">← Zurück</button>
+        <span id="reader-title" class="reader-title"></span>
+        <span id="page-info" class="page-info"></span>
+      </div>
+      <div class="flipbook-wrap">
+        <button id="btn-prev" class="flip-nav left">&#8249;</button>
+        <div id="flipbook-container"></div>
+        <button id="btn-next" class="flip-nav right">&#8250;</button>
+      </div>
+    </section>
+  </main>
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-view="archive"><span>📋</span><label>Ausgaben</label></button>
+    <button class="nav-item" data-view="latest"><span>📖</span><label>Aktuell</label></button>
+  </nav>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+﻿name: E-Mail zu PDF verarbeiten
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+jobs:
+  check-email:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Abhaengigkeiten installieren
+        run: pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib requests
+
+      - name: E-Mails pruefen und PDFs herunterladen
+        env:
+          GMAIL_CREDENTIALS: ${{ secrets.GMAIL_CREDENTIALS }}
+          GMAIL_TOKEN:       ${{ secrets.GMAIL_TOKEN }}
+          ONESIGNAL_APP_ID:  ${{ secrets.ONESIGNAL_APP_ID }}
+          ONESIGNAL_API_KEY: ${{ secrets.ONESIGNAL_API_KEY }}
+        run: python scripts/check_email.py
+
+      - name: PDF-Index aktualisieren
+        run: python scripts/update_index.py
+
+      - name: Aenderungen committen
+        run: |
+          git config user.name  "FCW Bot"
+          git config user.email "bot@fcweisingen.de"
+          git add public/pdfs/
+          if git diff --staged --quiet; then
+            echo "Keine neuen PDFs."
+          else
+            git commit -m "Neue Ausgabe hinzugefuegt [automatisch]"
+            git push
+          fi

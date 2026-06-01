@@ -31,7 +31,7 @@ def extract_title(subject, filename):
 def send_push(title):
     if not ONESIGNAL_APP_ID: return
     requests.post("https://onesignal.com/api/v1/notifications",
-        headers={"Authorization": f"Basic {ONESIGNAL_API_KEY}", "Content-Type": "application/json"},
+        headers={"Authorization": f"Key {ONESIGNAL_API_KEY}", "Content-Type": "application/json"},
         json={"app_id": ONESIGNAL_APP_ID, "included_segments": ["All"],
               "headings": {"de": "FCW-Blaettle"}, "url": GITHUB_PAGES_URL,
               "contents": {"de": f"Neue Ausgabe: {title} ist jetzt verfuegbar!"}}, timeout=15)

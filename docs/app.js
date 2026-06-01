@@ -283,8 +283,9 @@ async function renderPdfStrip(pdfUrl){
 
   // Navigations-Buttons (Desktop)
   function scrollToPage(dir){
-    if(!strip.firstElementChild)return;
-    const pageW=strip.firstElementChild.clientWidth+6;
+    const firstPage=wrapper.querySelector('.pdf-page');
+    if(!firstPage)return;
+    const pageW=firstPage.clientWidth+6;
     strip.scrollBy({left: dir*pageW, behavior:'smooth'});
   }
   document.getElementById('btn-prev').onclick=()=>scrollToPage(-1);

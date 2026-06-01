@@ -12,7 +12,7 @@ def get_date(fn):
 def make_title(fn):
     name = Path(fn).stem
     name = re.sub(r"^\d{4}-\d{2}-\d{2}_?", "", name)
-    return name.replace("_"," ").replace("-"," ").strip().title() or "FCW-Blaettle"
+    return name.replace("_"," ").replace("-"," ").strip() or "FCW-Blaettle"
 
 def build_index():
     # Sortierung: zuerst nach Datum, bei gleichem Datum nach Aenderungszeit (neueste zuerst)

@@ -1,6 +1,6 @@
 ﻿/* FCW-Blaettle - Service Worker */
 /* CACHE_VERSION wird automatisch vom GitHub Actions Workflow aktualisiert */
-const CACHE_NAME='fcw-blaettle-v1780300443';
+const CACHE_NAME='fcw-blaettle-v1780300933';
 const STATIC=['/','/index.html','/style.css','/app.js','/manifest.json','/icons/icon-192.png','/icons/icon-512.png'];
 self.addEventListener('install',(e)=>{
   e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(STATIC)));

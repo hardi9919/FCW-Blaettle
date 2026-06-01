@@ -12,7 +12,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="FCW-Blättle" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <link rel="stylesheet" href="style.css" />
@@ -46,11 +45,7 @@
         <span id="reader-title" class="reader-title"></span>
         <span id="page-info" class="page-info"></span>
       </div>
-      <div class="flipbook-wrap">
-        <button id="btn-prev" class="flip-nav left">&#8249;</button>
-        <div id="flipbook-container"></div>
-        <button id="btn-next" class="flip-nav right">&#8250;</button>
-      </div>
+      <div id="pdf-strip" class="pdf-strip"></div>
     </section>
   </main>
   <nav class="bottom-nav">

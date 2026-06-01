@@ -1,6 +1,6 @@
 ﻿/* FCW-Blaettle - App Logic */
 const CONFIG = { oneSignalAppId: 'DEINE-ONESIGNAL-APP-ID', pdfListUrl: 'pdfs/index.json' };
-let allIssues=[], pageFlip=null, totalPages=0;
+let allIssues=[], totalPages=0;
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').then(reg => {
@@ -67,7 +67,10 @@ function showView(name){
   document.querySelector('[data-view="'+name+'"]')?.classList.add('active');
 }
 document.querySelectorAll('.nav-item').forEach(btn=>btn.addEventListener('click',()=>showView(btn.dataset.view)));
-document.getElementById('btn-back').addEventListener('click',()=>{destroyFlipbook();showView('archive');});
+document.getElementById('btn-back').addEventListener('click',()=>{
+  document.getElementById('pdf-strip').innerHTML='';
+  showView('archive');
+});
 
 async function loadIssues(){
   try{ const res=await fetch(CONFIG.pdfListUrl+'?t='+Date.now()); allIssues=await res.json(); }
@@ -110,69 +113,51 @@ async function openReader(issue){
   document.getElementById('view-archive').classList.remove('active');
   document.getElementById('view-reader').classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('flipbook-container').innerHTML='<div class="loading-spinner">Lade Blaettle...</div>';
+  const strip=document.getElementById('pdf-strip');
+  strip.innerHTML='<div class="loading-spinner" style="color:white;width:100%;padding:40px;text-align:center;">Lade Blaettle...</div>';
   document.getElementById('page-info').textContent='';
-  try{ await renderPdfToFlipbook(issue.url); }
-  catch(err){ document.getElementById('flipbook-container').innerHTML=
-    '<div class="loading-spinner" style="color:red">Fehler: '+err.message+'</div>'; }
+  try{ await renderPdfStrip(issue.url); }
+  catch(err){ strip.innerHTML='<div class="loading-spinner" style="color:red;width:100%;padding:40px;text-align:center;">Fehler: '+err.message+'</div>'; }
 }
 
-async function renderPdfToFlipbook(pdfUrl){
+async function renderPdfStrip(pdfUrl){
   pdfjsLib.GlobalWorkerOptions.workerSrc=
     'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
   const pdf=await pdfjsLib.getDocument(pdfUrl).promise;
   totalPages=pdf.numPages;
-  const pages=[];
+
+  const strip=document.getElementById('pdf-strip');
+  strip.innerHTML='';
+
+  // Hoehe des Strips bestimmen
+  const stripH=strip.clientHeight||window.innerHeight-120;
+
   for(let i=1;i<=totalPages;i++){
     const page=await pdf.getPage(i);
-    const scale=(window.innerWidth - 16)/page.getViewport({scale:1}).width;
+    const vp0=page.getViewport({scale:1});
+    // Skalierung: Seite fuellt die Hoehe des Strips
+    const scale=stripH/vp0.height;
     const vp=page.getViewport({scale});
     const canvas=document.createElement('canvas');
     canvas.width=vp.width; canvas.height=vp.height;
     await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
-    pages.push({src:canvas.toDataURL('image/jpeg',0.92),w:vp.width,h:vp.height});
-  }
-  buildFlipbook(pages);
-}
-
-function buildFlipbook(pages){
-  destroyFlipbook();
-  const container=document.getElementById('flipbook-container');
-  container.innerHTML='';
-  const el=document.createElement('div');
-  el.id='flipbook';
-  container.appendChild(el);
-  pageFlip=new St.PageFlip(el,{
-    width:pages[0].w,height:pages[0].h,
-    size:'fixed',showCover:true,
-    mobileScrollSupport:true,usePortrait:true,autoSize:true
-  });
-  const divs=pages.map(p=>{
-    const div=document.createElement('div');
-    div.className='page';
-    div.style.cssText='background:white;overflow:hidden;';
     const img=document.createElement('img');
-    img.src=p.src;
-    img.style.cssText='width:100%;height:100%;object-fit:cover;display:block;';
-    div.appendChild(img);
-    return div;
-  });
-  pageFlip.loadFromHTML(divs);
-  pageFlip.on('flip',updatePageInfo);
-  updatePageInfo();
-  document.getElementById('btn-prev').onclick=()=>pageFlip?.flipPrev();
-  document.getElementById('btn-next').onclick=()=>pageFlip?.flipNext();
-}
+    img.src=canvas.toDataURL('image/jpeg',0.92);
+    img.className='pdf-page';
+    img.dataset.page=i;
+    strip.appendChild(img);
+  }
 
-function updatePageInfo(){
-  if(!pageFlip)return;
-  document.getElementById('page-info').textContent=
-    'Seite '+(pageFlip.getCurrentPageIndex()+1)+' / '+totalPages;
-}
-
-function destroyFlipbook(){
-  if(pageFlip){try{pageFlip.destroy();}catch{} pageFlip=null;}
-  document.getElementById('flipbook-container').innerHTML='';
+  // Seitenanzeige per Scroll aktualisieren
+  strip.scrollLeft=0;
+  document.getElementById('page-info').textContent='Seite 1 / '+totalPages;
+  strip.addEventListener('scroll',()=>{
+    if(!strip.firstElementChild)return;
+    const pageW=strip.firstElementChild.clientWidth;
+    if(pageW===0)return;
+    const cur=Math.round(strip.scrollLeft/pageW)+1;
+    document.getElementById('page-info').textContent='Seite '+Math.min(cur,totalPages)+' / '+totalPages;
+  },{passive:true});
 }
 
 async function init(){

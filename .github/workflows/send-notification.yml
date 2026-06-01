@@ -2,7 +2,7 @@ name: Push-Benachrichtigung senden
 
 on:
   workflow_run:
-    workflows: ["pages build and deployment"]
+    workflows: ["pages-build-deployment"]
     types: [completed]
 
 permissions:
@@ -32,6 +32,15 @@ jobs:
         if: steps.check.outputs.send == 'true'
         run: sleep 30
 
+      - uses: actions/setup-python@v5
+        if: steps.check.outputs.send == 'true'
+        with:
+          python-version: "3.11"
+
+      - name: Abhaengigkeiten installieren
+        if: steps.check.outputs.send == 'true'
+        run: pip install requests
+
       - name: Push-Benachrichtigung senden
         if: steps.check.outputs.send == 'true'
         env:
@@ -45,6 +54,7 @@ jobs:
         run: |
           git config user.name  "FCW Bot"
           git config user.email "bot@fcweisingen.de"
+          git pull --rebase
           git rm docs/pending_push.txt
           git commit -m "Push-Benachrichtigung gesendet [automatisch]"
           git push

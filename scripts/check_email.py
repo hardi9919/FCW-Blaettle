@@ -65,7 +65,8 @@ def process_emails():
                         out_path = PDF_DIR / out_name
                         if not out_path.exists():
                             out_path.write_bytes(data)
-                            t = extract_title(subject, fname)
+                            # Titel = PDF-Dateiname ohne Erweiterung, bereinigt
+                            t = Path(fname).stem.replace("_", " ").replace("-", " ").strip()
                             new_issues.append({"title": t, "date": date_prefix})
                             print(f"  Gespeichert: {out_name}")
         find_parts(msg["payload"].get("parts", [msg["payload"]]))

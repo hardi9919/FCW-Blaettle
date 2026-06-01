@@ -67,6 +67,38 @@ main:has(#view-reader.active) {
 .reader-title { flex: 1; font-weight: 700; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .page-info { font-size: 0.8rem; color: #888; white-space: nowrap; }
 
+/* Strip Wrapper mit Navigations-Buttons */
+.strip-wrap {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+.flip-nav {
+  display: none; /* Mobil: ausgeblendet */
+  background: var(--red);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 1.8rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+.flip-nav:hover { background: var(--red-dk); }
+
+/* Desktop: Buttons anzeigen */
+@media (min-width: 768px) {
+  .flip-nav { display: flex; }
+}
+
 /* PDF Strip Viewer */
 .pdf-strip {
   display: flex;

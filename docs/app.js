@@ -153,10 +153,12 @@ function setZoom(z) {
     }
   });
 
-  // Scroll so setzen dass man am selben Inhalt bleibt
+  // Scroll NACH dem Reflow setzen (requestAnimationFrame wartet auf Browser-Neuberechnung)
   if (strip) {
-    strip.scrollLeft = Math.max(0, cx);
-    strip.scrollTop  = Math.max(0, cy);
+    requestAnimationFrame(() => {
+      strip.scrollLeft = Math.max(0, cx);
+      strip.scrollTop  = Math.max(0, cy);
+    });
   }
   const el = document.getElementById('zoom-level');
   if (el) el.textContent = Math.round(currentZoom * 100) + '%';

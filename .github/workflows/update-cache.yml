@@ -3,12 +3,9 @@
 on:
   push:
     branches: [main]
-    paths:
-      - 'docs/index.html'
-      - 'docs/style.css'
-      - 'docs/app.js'
-      - 'docs/manifest.json'
-      - 'docs/icons/**'
+    # Bei JEDEM Push auf main – ausser wenn der Bot selbst sw.js gepusht hat
+    paths-ignore:
+      - 'docs/sw.js'
 
 permissions:
   contents: write

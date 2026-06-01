@@ -3,20 +3,37 @@ const CONFIG = { oneSignalAppId: 'DEINE-ONESIGNAL-APP-ID', pdfListUrl: 'pdfs/ind
 let allIssues=[], totalPages=0;
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').then(reg => {
-    // Neuen Service Worker erkennen und automatisch aktivieren
+  // updateViaCache:'none' = Browser holt sw.js IMMER vom Server, nie aus Cache
+  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
+
+    // Sofort aktivieren falls schon ein neuer SW wartet
+    if (reg.waiting) {
+      reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+    }
+
+    // Neuen SW erkennen und sofort aktivieren
     reg.addEventListener('updatefound', () => {
       const newSW = reg.installing;
       newSW.addEventListener('statechange', () => {
-        if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-          // Neuer Inhalt verfuegbar – Seite automatisch neu laden
-          navigator.serviceWorker.addEventListener('controllerchange', () => {
-            window.location.reload();
-          });
+        if (newSW.state === 'installed') {
           newSW.postMessage({ type: 'SKIP_WAITING' });
         }
       });
     });
+
+    // Nach Aktivierung: Seite neu laden
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      window.location.reload();
+    });
+
+    // Beim Oeffnen der App aktiv nach Updates suchen
+    reg.update();
+
+    // Auch wenn App aus dem Hintergrund kommt
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') reg.update();
+    });
+
   }).catch(console.error);
 }
 

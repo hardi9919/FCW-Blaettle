@@ -1,0 +1,36 @@
+﻿name: SW Build-Version aktualisieren
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/sw.js'   # Endlosschleife vermeiden
+
+permissions:
+  contents: write
+
+jobs:
+  bump-sw:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Timestamp in sw.js schreiben
+        run: |
+          TS=$(date +%s)
+          sed -i "s|/\* BUILD: [0-9]* \*/|/* BUILD: ${TS} */|" docs/sw.js
+          echo "BUILD: ${TS}"
+
+      - name: Committen und pushen
+        run: |
+          git config user.name  "FCW Bot"
+          git config user.email "bot@fcweisingen.de"
+          git add docs/sw.js
+          if git diff --staged --quiet; then
+            echo "Keine Aenderung."
+          else
+            git commit -m "SW Build-Version aktualisiert [automatisch]"
+            git push
+          fi

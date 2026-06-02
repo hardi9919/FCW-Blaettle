@@ -28,14 +28,20 @@ jobs:
         run: |
           git config user.name  "FCW Bot"
           git config user.email "bot@fcweisingen.de"
-          git add docs/pdfs/index.json
-          if git diff --staged --quiet; then
-            echo "index.json unveraendert."
-          else
-            git stash
+          for attempt in 1 2 3 4 5; do
             git pull --rebase
-            git stash pop
+            python scripts/update_index.py
             git add docs/pdfs/index.json
+            if git diff --staged --quiet; then
+              echo "index.json unveraendert."
+              break
+            fi
             git commit -m "index.json synchronisiert [automatisch]"
-            git push
-          fi
+            if git push; then
+              echo "Push erfolgreich."
+              break
+            fi
+            echo "Push fehlgeschlagen, erneuter Versuch ($attempt/5)..."
+            git reset HEAD~1
+            sleep 3
+          done

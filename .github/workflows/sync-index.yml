@@ -29,6 +29,7 @@ jobs:
           git config user.name  "FCW Bot"
           git config user.email "bot@fcweisingen.de"
           for attempt in 1 2 3 4 5; do
+            git checkout -- docs/pdfs/index.json 2>/dev/null || true
             git pull --rebase
             python scripts/update_index.py
             git add docs/pdfs/index.json

@@ -47,6 +47,7 @@ OneSignalDeferred.push(async(O)=>{
     window._osReady = true;
     if(O.User.PushSubscription.optedIn){
       document.getElementById('notif-btn').classList.add('active');
+      document.getElementById('notif-test-btn').classList.remove('hidden');
     }
   } catch(err) {
     console.error('OneSignal init error:', err);
@@ -67,15 +68,30 @@ document.getElementById('notif-btn').addEventListener('click', async () => {
     if (sub.optedIn) {
       await sub.optOut();
       btn.classList.remove('active');
+      document.getElementById('notif-test-btn').classList.add('hidden');
       alert('Benachrichtigungen deaktiviert.');
     } else {
       await OneSignal.Notifications.requestPermission();
       await sub.optIn();
       btn.classList.add('active');
+      document.getElementById('notif-test-btn').classList.remove('hidden');
       alert('Benachrichtigungen aktiviert!');
     }
   } catch(err) {
     alert('Fehler: ' + err.message);
+  }
+});
+
+document.getElementById('notif-test-btn').addEventListener('click', async () => {
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    await reg.showNotification('🔴⚪ FCW-Blättle – Test erfolgreich!', {
+      body: 'Benachrichtigungen funktionieren auf deinem Gerät. ✅',
+      icon: 'icons/icon-192.png',
+      badge: 'icons/icon-192.png',
+    });
+  } catch(err) {
+    alert('Test fehlgeschlagen: ' + err.message);
   }
 });
 

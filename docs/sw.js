@@ -1,7 +1,7 @@
 ﻿/* FCW-Blaettle - Service Worker */
 /* BUILD: 1781521235 */
 importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
-const PDF_CACHE = 'fcw-pdfs-v1';
+const PDF_CACHE = 'fcw-pdfs-v2';
 
 /* Sofort aktivieren – kein Warten */
 self.addEventListener('install', e => { self.skipWaiting(); });
@@ -21,12 +21,22 @@ self.addEventListener('fetch', e => {
 
   /* PDFs: Cache-first (einmal geladen, offline verfuegbar) */
   if (url.pathname.endsWith('.pdf')) {
+    /* Range-Requests (von pdf.js fuer Streaming genutzt) NIEMALS cachen.
+       Sonst landet eine unvollstaendige Teil-Antwort (206) im Cache und wird
+       spaeter faelschlich als komplette Datei ausgeliefert -> "Bad end offset" */
+    if (e.request.headers.has('range')) {
+      e.respondWith(fetch(e.request));
+      return;
+    }
     e.respondWith(
       caches.match(e.request).then(cached => {
         if (cached) return cached;
         return fetch(e.request).then(res => {
-          const clone = res.clone();
-          caches.open(PDF_CACHE).then(c => c.put(e.request, clone));
+          /* Nur vollstaendige, erfolgreiche Antworten cachen (status 200) */
+          if (res.ok && res.status === 200) {
+            const clone = res.clone();
+            caches.open(PDF_CACHE).then(c => c.put(e.request, clone));
+          }
           return res;
         });
       })

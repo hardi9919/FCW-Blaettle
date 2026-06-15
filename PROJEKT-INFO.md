@@ -147,6 +147,47 @@ PDF direkt in `docs/pdfs/` hochladen (GitHub → Add file → Upload files)
 
 ---
 
+## Gmail-Token erneuern (falls Workflow mit "invalid_grant" Fehler abbricht)
+
+Fehlermeldung in den Actions-Logs: `RefreshError: Token has been expired or revoked`
+
+**1. OAuth-Konsent-Bildschirm prüfen** (wichtig, sonst läuft das neue Token wieder ab!)
+   - https://console.cloud.google.com/apis/credentials/consent?project=fcw-blaettle
+   - Status muss **"In Produktion"** sein, nicht "Test"
+   - Falls "Test": auf "App veröffentlichen" / "Publish App" klicken, Warnung bestätigen
+
+**2. Neuen Refresh-Token holen über OAuth Playground**
+   - https://developers.google.com/oauthplayground
+   - ⚙️ Settings (oben rechts) → "Use your own OAuth credentials" aktivieren
+   - Client ID: `917042639034-viu7me0jvevpvqf0hbbhcbdpdq9smtjs.apps.googleusercontent.com`
+   - Client Secret: steht in `credentials.json` (lokal, Feld `client_secret`)
+   - Unten links bei "Input your own scopes": `https://www.googleapis.com/auth/gmail.modify`
+   - "Authorize APIs" klicken → mit dem FCW-Gmail-Konto anmelden → Zugriff erlauben
+   - Bei "Step 2" → "Exchange authorization code for tokens" klicken
+   - "Refresh token" Wert kopieren
+
+**3. token.json aktualisieren** (lokal in `fcw-blaettle/`)
+   ```json
+   {
+     "token": "<access_token aus Step 2>",
+     "refresh_token": "<refresh_token aus Step 2>",
+     "token_uri": "https://oauth2.googleapis.com/token",
+     "client_id": "917042639034-viu7me0jvevpvqf0hbbhcbdpdq9smtjs.apps.googleusercontent.com",
+     "client_secret": "<aus credentials.json>",
+     "scopes": ["https://www.googleapis.com/auth/gmail.modify"]
+   }
+   ```
+
+**4. GitHub Secret aktualisieren**
+   - https://github.com/hardi9919/FCW-Blaettle/settings/secrets/actions
+   - `GMAIL_TOKEN` → "Update secret" → Inhalt von `token.json` einfügen → speichern
+
+**5. Workflow testen**
+   - https://github.com/hardi9919/FCW-Blaettle/actions/workflows/email-to-pdf.yml
+   - "Run workflow" → Logs prüfen
+
+---
+
 ## App-URL
 
 **https://hardi9919.github.io/FCW-Blaettle/**
@@ -160,6 +201,9 @@ App ist danach wie eine native App auf dem Homescreen verfügbar.
 
 - ⚠️ `credentials.json` und `token.json` sind **nicht in Git** — sicher aufbewahren!
 - ⚠️ GitHub Secrets regelmäßig prüfen (OAuth Token läuft in ~6 Monaten ohne Nutzung ab)
+- ⚠️ **WICHTIG:** OAuth-Konsent-Bildschirm muss auf **"In Produktion"** stehen (nicht "Test")!
+  Prüfen unter: https://console.cloud.google.com/apis/credentials/consent?project=fcw-blaettle
+  Im "Test"-Status laufen Refresh-Tokens nach **7 Tagen** ab (egal ob genutzt oder nicht).
 - ⚠️ Make.com Free Plan: 1.000 Operationen/Monat (reicht für ~33 Ausgaben/Monat)
 - ⚠️ OneSignal Free Plan: bis zu 10.000 Push-Abonnenten kostenlos
 - ⚠️ GitHub Pages: kostenlos, unbegrenzte Nutzer

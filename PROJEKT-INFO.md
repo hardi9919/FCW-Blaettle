@@ -39,6 +39,13 @@ Neue Ausgaben erscheinen automatisch nach dem Einschicken per E-Mail.
 - **Site URL:** https://hardi9919.github.io (Root-Domain wegen Service Worker)
 - **API Key:** in GitHub Secrets gespeichert (ONESIGNAL_API_KEY)
 
+### Cloudflare Web Analytics (Besucherstatistik)
+- **Zweck:** Cookie-lose, datenschutzfreundliche Besucherzahlen der App
+- **Dashboard:** https://dash.cloudflare.com → "Analytics & Logs" → "Web Analytics"
+- **Hostname:** `hardi9919.github.io`
+- **Site-Token:** `009b371652514ddf986f44d6966b493b` (im `<head>` von `docs/index.html` eingebunden)
+- Erfasst nur anonyme, aggregierte Daten (keine individuelle Nutzerverfolgung)
+
 ### Make.com (Automatisierungs-Trigger)
 - **Zweck:** Prüft Gmail alle 15 Minuten und startet den GitHub Actions Workflow
 - **Account:** https://make.com

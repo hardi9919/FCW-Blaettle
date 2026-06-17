@@ -26,14 +26,15 @@ header { background: var(--red); color: var(--white); position: sticky; top: 0; 
 .install-banner #install-close { background: transparent; color: white; padding: 4px 8px; font-size: 1rem; }
 .hidden { display: none !important; }
 
-main { max-width: 700px; margin: 0 auto; padding: 16px 16px 80px; min-height: calc(100vh - 64px - 60px); }
+main { width: 100%; min-height: calc(100vh - 64px - 60px); }
 .view { display: none; }
 .view.active { display: block; }
 
+/* Archiv-View: zentriert mit max-width */
+#view-archive { max-width: 700px; margin: 0 auto; padding: 16px 16px 80px; }
+
 /* Reader-Ansicht */
 main:has(#view-reader.active) {
-  padding: 0;
-  max-width: none;
   height: calc(100vh - 64px - 60px);
   overflow: hidden;
 }

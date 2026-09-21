@@ -258,19 +258,15 @@ async function renderPdfStrip(pdfUrl){
   totalPages=pdf.numPages;
 
   const strip=document.getElementById('pdf-strip');
-  strip.innerHTML='';
 
   // Verfuegbare Breite und Hoehe des Strips
   const stripW=strip.clientWidth  || window.innerWidth;
   const stripH=strip.clientHeight || window.innerHeight-168;
 
-  // Innerer Wrapper: bestimmt die scrollbare Flaeche exakt
+  // Alle Seiten offline rendern (Strip zeigt Ladebalken bis alles fertig)
   const wrapper=document.createElement('div');
-  // Zentrierung-Container: zentriert Inhalt wenn kleiner als Strip (Rauszoomen)
   const centerer=document.createElement('div');
   centerer.style.cssText='min-width:100%;min-height:100%;display:flex;align-items:center;';
-  strip.appendChild(centerer);
-
   wrapper.id='pages-wrapper';
   wrapper.style.cssText='display:inline-flex;flex-direction:row;gap:6px;align-items:flex-start;padding:0;';
   centerer.appendChild(wrapper);
@@ -299,6 +295,10 @@ async function renderPdfStrip(pdfUrl){
     img.style.cssText=`width:${dispW}px;height:${dispH}px;flex-shrink:0;display:block;`;
     wrapper.appendChild(img);
   }
+
+  // Einmaliger DOM-Swap: Ladebalken raus, alle Seiten rein — kein Scroll-Reset moeglich
+  strip.innerHTML='';
+  strip.appendChild(centerer);
 
   // Seitenanzeige per Scroll aktualisieren
   document.getElementById('page-info').textContent='Seite 1 / '+totalPages;

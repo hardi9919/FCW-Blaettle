@@ -43,8 +43,10 @@ self.addEventListener('fetch', e => {
     );
     return;
   }
-  /* Alle anderen Dateien (HTML, JS, CSS): IMMER vom Server holen */
-  /* Kein Caching = immer aktuell */
+  /* Alle anderen Dateien (HTML, JS, CSS): HTTP-Cache umgehen, immer aktuell */
+  if (url.origin === self.location.origin) {
+    e.respondWith(fetch(e.request, { cache: 'no-cache' }));
+  }
 });
 self.addEventListener('message',(e)=>{
   if(e.data?.type==='SKIP_WAITING') self.skipWaiting();

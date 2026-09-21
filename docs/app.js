@@ -301,7 +301,6 @@ async function renderPdfStrip(pdfUrl){
   }
 
   // Seitenanzeige per Scroll aktualisieren
-  strip.scrollLeft=0; strip.scrollTop=0;
   document.getElementById('page-info').textContent='Seite 1 / '+totalPages;
   strip.addEventListener('scroll',()=>{
     const pages=wrapper.querySelectorAll('.pdf-page');

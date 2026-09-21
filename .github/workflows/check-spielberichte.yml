@@ -1,0 +1,77 @@
+name: Spielbericht prüfen
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+    inputs:
+      push_senden:
+        description: "Push-Benachrichtigung senden?"
+        required: false
+        default: "ja"
+        type: choice
+        options:
+          - "ja"
+          - "nein (nur testen)"
+
+permissions:
+  contents: write
+
+jobs:
+  check-rss:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: RSS-Feed prüfen
+        id: check_rss
+        run: |
+          OUTPUT=$(python scripts/check_rss.py)
+          echo "$OUTPUT"
+          TITLE=$(echo "$OUTPUT" | grep "^PUSH_TITLE:" | sed 's/^PUSH_TITLE://')
+          SILENT=$(echo "$OUTPUT" | grep "^UPDATED_SILENT:" | sed 's/^UPDATED_SILENT://')
+          if [ -n "$TITLE" ]; then
+            echo "push_title=$TITLE" >> $GITHUB_OUTPUT
+            echo "new_article=true" >> $GITHUB_OUTPUT
+            echo "changed=true" >> $GITHUB_OUTPUT
+          elif [ -n "$SILENT" ]; then
+            echo "new_article=false" >> $GITHUB_OUTPUT
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "new_article=false" >> $GITHUB_OUTPUT
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Änderungen committen
+        if: steps.check_rss.outputs.changed == 'true'
+        run: |
+          git config user.name  "FCW Bot"
+          git config user.email "bot@fcweisingen.de"
+          git add docs/spielbericht/data.json
+          if git diff --staged --quiet; then
+            echo "Keine Änderungen."
+            exit 0
+          fi
+          TIMESTAMP=$(date +%s)
+          sed -i "s/BUILD: [0-9]*/BUILD: ${TIMESTAMP}/" docs/sw.js
+          git add docs/sw.js
+          PUSH_OPT="${{ github.event.inputs.push_senden }}"
+          NEW="${{ steps.check_rss.outputs.new_article }}"
+          if [ "$NEW" = "true" ] && [ "$PUSH_OPT" != "nein (nur testen)" ]; then
+            TITLE="${{ steps.check_rss.outputs.push_title }}"
+            echo "$TITLE" > docs/pending_spielbericht_push.txt
+            git add docs/pending_spielbericht_push.txt
+          fi
+          TITLE="${{ steps.check_rss.outputs.push_title }}"
+          if [ -n "$TITLE" ]; then
+            git commit -m "Neuer Spielbericht: $TITLE [automatisch]"
+          else
+            git commit -m "Spielbericht aktualisiert [automatisch]"
+          fi
+          git push

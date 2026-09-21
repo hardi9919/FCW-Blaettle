@@ -210,6 +210,21 @@ main:has(#view-reader.active) {
 .modal-content hr { border: none; border-top: 1px solid #e0e0e0; margin: 20px 0; }
 .modal-footer-note { font-size: 0.75rem !important; color: #999 !important; margin-top: 16px; }
 
+/* Spielbericht-View */
+#view-spielbericht { max-width: 700px; margin: 0 auto; padding: 16px 16px 80px; }
+.spielbericht-empty { text-align: center; color: #888; padding: 48px 16px; font-size: 1rem; }
+.spielbericht-article { background: white; border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px 20px 28px; }
+.spielbericht-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 6px; }
+.spielbericht-date { font-size: 0.8rem; color: #888; }
+.spielbericht-link { font-size: 0.8rem; color: var(--red); text-decoration: none; }
+.spielbericht-link:hover { text-decoration: underline; }
+.spielbericht-title { font-size: 1.2rem; font-weight: 700; color: var(--red); margin-bottom: 16px; line-height: 1.35; border-bottom: 2px solid var(--red); padding-bottom: 10px; }
+.spielbericht-body { font-size: 0.88rem; line-height: 1.7; color: #333; }
+.spielbericht-body p { margin-bottom: 10px; }
+.spielbericht-body img { max-width: 100%; height: auto; border-radius: 6px; margin: 8px 0; }
+.spielbericht-body a { color: var(--red); }
+.spielbericht-body h1, .spielbericht-body h2, .spielbericht-body h3 { font-size: 1rem; font-weight: 700; margin: 12px 0 6px; }
+
 @media (max-width: 480px) {
   .archive-grid { grid-template-columns: repeat(2, 1fr); }
 }

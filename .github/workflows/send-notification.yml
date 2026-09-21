@@ -22,8 +22,16 @@ jobs:
         run: |
           if [ -f "docs/pending_push.txt" ]; then
             TITLE=$(cat docs/pending_push.txt)
-            echo "title=$TITLE" >> $GITHUB_OUTPUT
+            echo "title=Neue Ausgabe: $TITLE" >> $GITHUB_OUTPUT
+            echo "body=Das aktuelle FCW-Blättle ist jetzt verfügbar!" >> $GITHUB_OUTPUT
             echo "send=true" >> $GITHUB_OUTPUT
+            echo "type=blaettle" >> $GITHUB_OUTPUT
+          elif [ -f "docs/pending_spielbericht_push.txt" ]; then
+            TITLE=$(cat docs/pending_spielbericht_push.txt)
+            echo "title=⚽ Neuer Spielbericht!" >> $GITHUB_OUTPUT
+            echo "body=$TITLE" >> $GITHUB_OUTPUT
+            echo "send=true" >> $GITHUB_OUTPUT
+            echo "type=spielbericht" >> $GITHUB_OUTPUT
           else
             echo "send=false" >> $GITHUB_OUTPUT
           fi
@@ -46,15 +54,21 @@ jobs:
         env:
           ONESIGNAL_APP_ID:  ${{ secrets.ONESIGNAL_APP_ID }}
           ONESIGNAL_API_KEY: ${{ secrets.ONESIGNAL_API_KEY }}
-          PUSH_TITLES:       ${{ steps.check.outputs.title }}
+          PUSH_TITLE:        ${{ steps.check.outputs.title }}
+          PUSH_BODY:         ${{ steps.check.outputs.body }}
         run: python scripts/send_push.py
 
-      - name: pending_push.txt loeschen
+      - name: Pending-Datei loeschen
         if: steps.check.outputs.send == 'true'
         run: |
           git config user.name  "FCW Bot"
           git config user.email "bot@fcweisingen.de"
           git pull --rebase
-          git rm docs/pending_push.txt
+          if [ -f "docs/pending_push.txt" ]; then
+            git rm docs/pending_push.txt
+          fi
+          if [ -f "docs/pending_spielbericht_push.txt" ]; then
+            git rm docs/pending_spielbericht_push.txt
+          fi
           git commit -m "Push-Benachrichtigung gesendet [skip ci]"
           git push

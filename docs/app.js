@@ -1,6 +1,6 @@
 ﻿/* FCW-Blaettle - App Logic */
-const CONFIG = { oneSignalAppId: '5e6a5c8a-eb23-46a0-b26f-f806ad6d109f', pdfListUrl: 'pdfs/index.json' };
-let allIssues=[], totalPages=0;
+const CONFIG = { oneSignalAppId: '5e6a5c8a-eb23-46a0-b26f-f806ad6d109f', pdfListUrl: 'pdfs/index.json', spielberichtUrl: 'spielbericht/data.json' };
+let allIssues=[], totalPages=0, spielberichtData=null;
 
 if ('serviceWorker' in navigator) {
   // updateViaCache:'none' = Browser holt sw.js IMMER vom Server, nie aus Cache
@@ -126,6 +126,9 @@ function showView(name){
     document.querySelector('[data-view="latest"]').classList.add('active');
     return;
   }
+  if(name==='spielbericht'){
+    renderSpielbericht();
+  }
   const view=document.getElementById('view-'+name);
   if(view)view.classList.add('active');
   document.querySelector('[data-view="'+name+'"]')?.classList.add('active');
@@ -179,6 +182,31 @@ async function loadIssues(){
   try{ const res=await fetch(CONFIG.pdfListUrl+'?t='+Date.now()); allIssues=await res.json(); }
   catch{ allIssues=[]; }
   renderArchive();
+}
+
+async function loadSpielbericht(){
+  try{
+    const res=await fetch(CONFIG.spielberichtUrl+'?t='+Date.now());
+    if(res.ok) spielberichtData=await res.json();
+  } catch{ spielberichtData=null; }
+}
+
+function renderSpielbericht(){
+  const el=document.getElementById('spielbericht-content');
+  if(!spielberichtData||!spielberichtData.title){
+    el.innerHTML='<div class="spielbericht-empty">Noch kein Spielbericht vorhanden.</div>';
+    return;
+  }
+  const d=spielberichtData;
+  el.innerHTML=`
+    <div class="spielbericht-article">
+      <div class="spielbericht-meta">
+        <span class="spielbericht-date">${d.date ? formatDate(d.date) : ''}</span>
+        ${d.link ? `<a class="spielbericht-link" href="${d.link}" target="_blank" rel="noopener noreferrer">Auf fcweisingen.de lesen ↗</a>` : ''}
+      </div>
+      <h2 class="spielbericht-title">${d.title}</h2>
+      <div class="spielbericht-body">${d.content||''}</div>
+    </div>`;
 }
 
 function renderArchive(){
@@ -316,8 +344,7 @@ async function renderPdfStrip(pdfUrl){
 }
 
 async function init(){
-  await loadIssues();
-  // Standardmaessig die aktuellste Ausgabe direkt oeffnen
+  await Promise.all([loadIssues(), loadSpielbericht()]);
   if(allIssues.length>0){
     showView('latest');
   } else {

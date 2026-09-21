@@ -245,7 +245,13 @@ async function openReader(issue){
   document.getElementById('view-reader').classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   const strip=document.getElementById('pdf-strip');
-  strip.innerHTML='<div class="loading-spinner" style="color:white;width:100%;padding:40px;text-align:center;">Lade Blaettle...</div>';
+  strip.innerHTML='<div style="color:white;width:100%;padding:40px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;">'+
+    '<div style="font-size:1rem;">Lade Blättle…</div>'+
+    '<div style="width:200px;height:8px;background:rgba(255,255,255,0.2);border-radius:4px;overflow:hidden;">'+
+      '<div id="pdf-progress-bar" style="height:100%;width:0%;background:#CC0000;border-radius:4px;transition:width 0.2s;"></div>'+
+    '</div>'+
+    '<div id="pdf-progress-text" style="font-size:0.85rem;opacity:0.7;">0 %</div>'+
+  '</div>';
   document.getElementById('page-info').textContent='';
   try{ await renderPdfStrip(issue.url); }
   catch(err){ strip.innerHTML='<div class="loading-spinner" style="color:red;width:100%;padding:40px;text-align:center;">Fehler: '+err.message+'</div>'; }
@@ -294,6 +300,11 @@ async function renderPdfStrip(pdfUrl){
     img.dataset.baseH=dispH;
     img.style.cssText=`width:${dispW}px;height:${dispH}px;flex-shrink:0;display:block;`;
     wrapper.appendChild(img);
+    const pct = Math.round((i / totalPages) * 100);
+    const bar = document.getElementById('pdf-progress-bar');
+    const txt = document.getElementById('pdf-progress-text');
+    if(bar) bar.style.width = pct + '%';
+    if(txt) txt.textContent = pct + ' %';
   }
 
   // Einmaliger DOM-Swap: Ladebalken raus, alle Seiten rein — kein Scroll-Reset moeglich

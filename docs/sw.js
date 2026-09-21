@@ -1,5 +1,5 @@
 ﻿/* FCW-Blaettle - Service Worker */
-/* BUILD: 1789993763 */
+/* BUILD: 1789994139 */
 importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
 const PDF_CACHE = 'fcw-pdfs-v2';
 

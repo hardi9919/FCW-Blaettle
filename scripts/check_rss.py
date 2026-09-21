@@ -2,14 +2,31 @@ import json, os, sys
 import urllib.request
 import xml.etree.ElementTree as ET
 from email.utils import parsedate_to_datetime
+from bs4 import BeautifulSoup
 
 RSS_URL   = 'https://fcweisingen.de/index.php?option=com_content&view=category&id=10&format=feed&type=rss'
 DATA_FILE = 'docs/spielbericht/data.json'
 
-def fetch_rss():
-    req = urllib.request.Request(RSS_URL, headers={'User-Agent': 'FCW-Blaettle-Bot/1.0'})
+def fetch_url(url):
+    req = urllib.request.Request(url, headers={'User-Agent': 'FCW-Blaettle-Bot/1.0'})
     with urllib.request.urlopen(req, timeout=15) as resp:
         return resp.read()
+
+def fetch_rss():
+    return fetch_url(RSS_URL)
+
+def fetch_full_content(article_url):
+    req = urllib.request.Request(article_url, headers={'User-Agent': 'FCW-Blaettle-Bot/1.0'})
+    with urllib.request.urlopen(req, timeout=15) as resp:
+        raw = resp.read()
+    html = raw.decode('utf-8', errors='replace')
+    soup = BeautifulSoup(html, 'html.parser')
+    container = soup.find('div', class_='item-page')
+    if not container:
+        return None
+    for h1 in container.find_all('h1'):
+        h1.decompose()
+    return str(container)
 
 def parse_latest(xml_bytes):
     root = ET.fromstring(xml_bytes)
@@ -52,12 +69,22 @@ def main():
 
     if latest['guid'] and latest['guid'] == current.get('guid'):
         if latest['content'] != current.get('content') or latest['title'] != current.get('title'):
+            if latest.get('link'):
+                full = fetch_full_content(latest['link'])
+                if full:
+                    latest['content'] = full
             print('Artikel aktualisiert (kein Push).')
             save(latest)
             print('UPDATED_SILENT:true')
         else:
             print('Kein neuer Spielbericht.')
         sys.exit(0)
+
+    # Vollständigen Artikeltext von der Seite holen
+    if latest.get('link'):
+        full = fetch_full_content(latest['link'])
+        if full:
+            latest['content'] = full
 
     print(f'Neuer Spielbericht: {latest["title"]}')
     save(latest)

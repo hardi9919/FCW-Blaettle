@@ -23,7 +23,10 @@ Neue Ausgaben erscheinen automatisch nach dem Einschicken per E-Mail.
 - Das Gmail-Konto das mit der Google Cloud Console verbunden wurde
 - **Gmail-Label:** `FCW/FCW-Blaettle`
 - Neue PDFs müssen in dieses Label verschoben werden (per Gmail-Filter automatisch)
-- Der GitHub Actions Workflow prüft alle 15 Minuten auf neue ungelesene E-Mails in diesem Label
+- Der GitHub Actions Workflow (`pdf-checker.yml`) prüft per Zeitplan auf neue **ungelesene** E-Mails in diesem Label
+- ⚠️ Zeitplan ist `*/15`, GitHub drosselt aber stark: real läuft er nur ca. alle 2–6 Stunden (Median ~4 h).
+  Eine neue Mail kann also bis zu ~6 Stunden liegen bleiben. Sofort verarbeiten: Actions → "E-Mail zu PDF verarbeiten" → "Run workflow".
+- ⚠️ Mail nicht vorher in Gmail öffnen/als gelesen markieren, sonst wird sie übersprungen (Suche: `is:unread`)
 
 ### Google Cloud Console
 - **Projekt:** fcw-blaettle
@@ -46,14 +49,12 @@ Neue Ausgaben erscheinen automatisch nach dem Einschicken per E-Mail.
 - **Site-Token:** `009b371652514ddf986f44d6966b493b` (im `<head>` von `docs/index.html` eingebunden)
 - Erfasst nur anonyme, aggregierte Daten (keine individuelle Nutzerverfolgung)
 
-### Make.com (Automatisierungs-Trigger)
-- **Zweck:** Prüft Gmail alle 15 Minuten und startet den GitHub Actions Workflow
-- **Account:** https://make.com
-- **Scenario:** Gmail (Label FCW/FCW-Blaettle) → HTTP Request → GitHub Actions
-- **GitHub Token (für Make.com):** Liegt sicher bei dir lokal — NICHT hier eintragen!
-  - Neu erstellen unter: https://github.com/settings/tokens
-  - Scope: `repo`, No expiration
-  - ⚠️ Token sicher aufbewahren, nicht in Git speichern!
+### Make.com (Automatisierungs-Trigger) — DEAKTIVIERT
+- **Status:** Seit 28.09.2026 abgeschaltet. Hat laut Actions-Verlauf ohnehin nie einen Lauf ausgelöst;
+  der GitHub-Zeitplan (alle paar Stunden) reicht aus.
+- **Früherer Zweck:** Gmail (Label FCW/FCW-Blaettle) → HTTP Request → GitHub Actions
+- Falls je wieder gewünscht: GitHub-Token (Scope `repo` bzw. Actions: write) unter
+  https://github.com/settings/tokens erstellen — NICHT in Git oder hier eintragen!
 
 ---
 
@@ -77,17 +78,32 @@ Neue Ausgaben erscheinen automatisch nach dem Einschicken per E-Mail.
    → Betreff beliebig, PDF als Anhang
    → Gmail-Filter schiebt die Mail ins Label FCW/FCW-Blaettle
 
-2. Make.com erkennt neue E-Mail im Label (alle 15 Min.)
-   → Löst GitHub Actions Workflow aus
+2. GitHub-Zeitplan startet den Workflow (real ca. alle 2–6 Std., oder manuell per "Run workflow")
 
-3. GitHub Actions (email-to-pdf.yml):
+3. GitHub Actions (pdf-checker.yml):
    → Lädt PDF aus Gmail herunter
    → Speichert PDF in docs/pdfs/
    → Aktualisiert docs/pdfs/index.json (Ausgaben-Liste)
-   → Wartet 90 Sekunden (GitHub Pages Deployment)
+   → Committet und schreibt docs/pending_push.txt
+
+3b. send-notification.yml startet nach dem GitHub-Pages-Deployment
    → Sendet Push-Benachrichtigung an alle Nutzer via OneSignal
+   → Löscht pending_push.txt wieder
 
 4. App aktualisiert sich beim nächsten Öffnen automatisch
+```
+
+### Spielbericht (automatisch von fcweisingen.de)
+
+```
+1. check-spielberichte.yml (Zeitplan, real ca. alle 2–6 Std., oder manuell)
+   → check_rss.py liest den RSS-Feed der Kategorie "Spielbericht" (nur zur Erkennung, guid)
+   → Holt den VOLLEN Text von der Artikelseite (div.item-page), da der Feed nur den
+     Text vor "Weiterlesen" enthält
+   → Speichert nur den neuesten Bericht in docs/spielbericht/data.json (kein Archiv)
+
+2. Neue guid  → data.json + pending_spielbericht_push.txt → Push "⚽ Neuer Spielbericht!"
+   Gleiche guid, geänderter Text (z. B. Rechtschreibung) → data.json still aktualisiert, KEIN Push
 ```
 
 ### App-Update (Code-Änderungen)
@@ -118,17 +134,24 @@ fcw-blaettle/
 │   │   ├── icon-192.png         ← App-Icon klein
 │   │   ├── icon-512.png         ← App-Icon groß
 │   │   └── logo_original.png    ← FCW Logo Original
-│   └── pdfs/
-│       ├── index.json           ← Automatisch generierte Ausgaben-Liste
-│       └── *.pdf                ← Die Blättle-PDFs
+│   ├── pdfs/
+│   │   ├── index.json           ← Automatisch generierte Ausgaben-Liste
+│   │   └── *.pdf                ← Die Blättle-PDFs
+│   └── spielbericht/
+│       └── data.json            ← Neuester Spielbericht (Titel, Datum, HTML-Inhalt)
 │
 ├── scripts/
-│   ├── check_email.py           ← Gmail prüfen & PDF speichern & Push senden
+│   ├── check_email.py           ← Gmail prüfen & PDF speichern
+│   ├── check_rss.py             ← Spielbericht von fcweisingen.de holen (RSS + Artikelseite)
+│   ├── send_push.py             ← Push via OneSignal senden
 │   ├── update_index.py          ← index.json neu generieren
 │   └── generate_token.py        ← Einmalig: Gmail OAuth Token erzeugen
 │
 ├── .github/workflows/
-│   ├── email-to-pdf.yml         ← Hauptworkflow (E-Mail → PDF → Push)
+│   ├── pdf-checker.yml          ← E-Mail → PDF → pending_push.txt (Zeitplan + manuell)
+│   ├── check-spielberichte.yml  ← Spielbericht prüfen (Zeitplan + manuell)
+│   ├── send-notification.yml    ← Push senden nach Pages-Deployment
+│   ├── sync-index.yml           ← PDF-Index aktuell halten
 │   └── bump-sw.yml              ← Service Worker Timestamp bei Code-Updates
 │
 ├── credentials.json             ← Google OAuth Credentials (NICHT in Git!)
@@ -190,7 +213,7 @@ Fehlermeldung in den Actions-Logs: `RefreshError: Token has been expired or revo
    - `GMAIL_TOKEN` → "Update secret" → Inhalt von `token.json` einfügen → speichern
 
 **5. Workflow testen**
-   - https://github.com/hardi9919/FCW-Blaettle/actions/workflows/email-to-pdf.yml
+   - https://github.com/hardi9919/FCW-Blaettle/actions/workflows/pdf-checker.yml
    - "Run workflow" → Logs prüfen
 
 ---
@@ -211,7 +234,6 @@ App ist danach wie eine native App auf dem Homescreen verfügbar.
 - ⚠️ **WICHTIG:** OAuth-Konsent-Bildschirm muss auf **"In Produktion"** stehen (nicht "Test")!
   Prüfen unter: https://console.cloud.google.com/apis/credentials/consent?project=fcw-blaettle
   Im "Test"-Status laufen Refresh-Tokens nach **7 Tagen** ab (egal ob genutzt oder nicht).
-- ⚠️ Make.com Free Plan: 1.000 Operationen/Monat (reicht für ~33 Ausgaben/Monat)
 - ⚠️ OneSignal Free Plan: bis zu 10.000 Push-Abonnenten kostenlos
 - ⚠️ GitHub Pages: kostenlos, unbegrenzte Nutzer
 

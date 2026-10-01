@@ -51,5 +51,22 @@ self.addEventListener('fetch', e => {
 self.addEventListener('message',(e)=>{
   if(e.data?.type==='SKIP_WAITING') self.skipWaiting();
 });
-/* Push-Anzeige und Klick-Verhalten uebernimmt das per importScripts geladene OneSignal-Skript.
-   Eigene push/notificationclick-Handler hier wuerden jede Benachrichtigung doppelt anzeigen. */
+self.addEventListener('push',(e)=>{
+  const data=e.data?.json()||{};
+  e.waitUntil(self.registration.showNotification(data.title||'FCW-Blaettle',{
+    body:data.body||'Neue Ausgabe verfuegbar!',
+    icon:data.icon||'/icons/icon-192.png',
+    badge:'/icons/icon-192.png',
+    data:{url:data.url||'/'},
+    vibrate:[200,100,200]
+  }));
+});
+self.addEventListener('notificationclick',(e)=>{
+  e.notification.close();
+  const url=e.notification.data?.url||'/';
+  e.waitUntil(clients.matchAll({type:'window',includeUncontrolled:true}).then(wins=>{
+    const ex=wins.find(w=>w.url.includes(self.location.origin));
+    if(ex)return ex.focus();
+    return clients.openWindow(url);
+  }));
+});

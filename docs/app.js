@@ -43,6 +43,9 @@ OneSignalDeferred.push(async(O)=>{
     await O.init({
       appId: CONFIG.oneSignalAppId,
       notifyButton: { enable: false },
+      // App-eigener Worker (sw.js lädt das OneSignal-Skript): Pushes gehören so zur installierten App
+      serviceWorkerPath: '/FCW-Blaettle/sw.js',
+      serviceWorkerParam: { scope: '/FCW-Blaettle/' },
     });
     window._osReady = true;
     if(O.User.PushSubscription.optedIn){

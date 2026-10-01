@@ -8,7 +8,7 @@ body    = os.environ.get("PUSH_BODY") or f"{title} ist jetzt verfuegbar!"
 res = requests.post("https://onesignal.com/api/v1/notifications",
     headers={"Authorization": f"Key {api_key}", "Content-Type": "application/json"},
     json={"app_id": app_id, "included_segments": ["All"],
-          "headings": {"en": "FCW-Blaettle", "de": "FCW-Blaettle"}, "url": url,
+          "headings": {"en": "FCW-Blättle", "de": "FCW-Blättle"}, "url": url,
           "contents": {"en": body, "de": body},
           "chrome_web_icon": icon, "chrome_web_badge": icon,
           "chrome_icon": icon, "firefox_icon": icon},

@@ -45,6 +45,9 @@ OneSignalDeferred.push(async(O)=>{
       notifyButton: { enable: false },
     });
     window._osReady = true;
+    // Eigene Test-Kennung: App einmal mit ?uid=NAME öffnen, dann steht NAME als External ID im OneSignal-Dashboard
+    const uid = new URLSearchParams(location.search).get('uid');
+    if (uid) await O.login(uid.slice(0, 40));
     if(O.User.PushSubscription.optedIn){
       document.getElementById('notif-btn').classList.add('active');
       document.getElementById('notif-test-btn').classList.remove('hidden');

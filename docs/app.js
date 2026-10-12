@@ -136,7 +136,11 @@ function showView(name){
   if(view)view.classList.add('active');
   document.querySelector('[data-view="'+name+'"]')?.classList.add('active');
 }
-document.querySelectorAll('.nav-item:not(.nav-impressum)').forEach(btn=>btn.addEventListener('click',()=>showView(btn.dataset.view)));
+document.querySelectorAll('.nav-item:not(.nav-impressum)').forEach(btn=>btn.addEventListener('click',()=>{
+  // ?view=... aus der Adresse entfernen, damit ein spaeteres Neuladen wieder beim aktuellen Blaettle landet
+  if(location.search) history.replaceState(null,'',location.pathname);
+  showView(btn.dataset.view);
+}));
 
 // Benachrichtigungs-Hilfe Modal
 function openNotifHelp(){ document.getElementById('notif-help-modal').classList.remove('hidden'); }
@@ -358,7 +362,10 @@ async function renderPdfStrip(pdfUrl){
 
 async function init(){
   await Promise.all([loadIssues(), loadSpielbericht()]);
-  if(allIssues.length>0){
+  // Push-Klick auf einen Spielbericht oeffnet die App mit ?view=spielbericht
+  if(new URLSearchParams(location.search).get('view')==='spielbericht'){
+    showView('spielbericht');
+  } else if(allIssues.length>0){
     showView('latest');
   } else {
     showView('archive');

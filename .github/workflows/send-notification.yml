@@ -26,12 +26,14 @@ jobs:
             echo "body=Das aktuelle FCW-Blättle ist jetzt verfügbar!" >> $GITHUB_OUTPUT
             echo "send=true" >> $GITHUB_OUTPUT
             echo "type=blaettle" >> $GITHUB_OUTPUT
+            echo "url=https://hardi9919.github.io/FCW-Blaettle/" >> $GITHUB_OUTPUT
           elif [ -f "docs/pending_spielbericht_push.txt" ]; then
             TITLE=$(cat docs/pending_spielbericht_push.txt)
             echo "title=⚽ Neuer Spielbericht!" >> $GITHUB_OUTPUT
             echo "body=$TITLE" >> $GITHUB_OUTPUT
             echo "send=true" >> $GITHUB_OUTPUT
             echo "type=spielbericht" >> $GITHUB_OUTPUT
+            echo "url=https://hardi9919.github.io/FCW-Blaettle/?view=spielbericht" >> $GITHUB_OUTPUT
           else
             echo "send=false" >> $GITHUB_OUTPUT
           fi
@@ -56,6 +58,7 @@ jobs:
           ONESIGNAL_API_KEY: ${{ secrets.ONESIGNAL_API_KEY }}
           PUSH_TITLE:        ${{ steps.check.outputs.title }}
           PUSH_BODY:         ${{ steps.check.outputs.body }}
+          PUSH_URL:          ${{ steps.check.outputs.url }}
         run: python scripts/send_push.py
 
       - name: Pending-Datei loeschen

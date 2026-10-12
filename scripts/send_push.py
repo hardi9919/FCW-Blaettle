@@ -1,8 +1,9 @@
 import os, time, requests
 app_id  = os.environ["ONESIGNAL_APP_ID"]
 api_key = os.environ["ONESIGNAL_API_KEY"]
-url     = "https://hardi9919.github.io/FCW-Blaettle/"
-icon    = url + "icons/icon-192.png"
+base    = "https://hardi9919.github.io/FCW-Blaettle/"
+url     = os.environ.get("PUSH_URL") or base
+icon    = base + "icons/icon-192.png"
 title   = os.environ.get("PUSH_TITLE") or os.environ.get("PUSH_TITLES","").split("|")[0].strip() or "FCW-Blaettle"
 body    = os.environ.get("PUSH_BODY") or f"{title} ist jetzt verfuegbar!"
 headers = {"Authorization": f"Key {api_key}", "Content-Type": "application/json"}

@@ -95,6 +95,36 @@
     <button id="install-btn">Installieren</button>
     <button id="install-close">✕</button>
   </div>
+
+  <!-- iOS: Anleitung zum Installieren -->
+  <div id="ios-install-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <button class="modal-close" id="ios-install-close">✕</button>
+      <div class="modal-content">
+        <h2>📲 App installieren</h2>
+
+        <div id="ios-inapp" class="hidden">
+          <p><strong>Du hast diese Seite in einer anderen App geöffnet</strong> (z. B. WhatsApp, Instagram oder Facebook). Dort kann man die App nicht installieren.</p>
+          <ol class="ios-steps">
+            <li>Tippe oben oder unten auf die <strong>drei Punkte</strong> bzw. das <strong>Teilen-Symbol</strong></li>
+            <li>Wähle <strong>„In Safari öffnen"</strong></li>
+            <li>Danach geht es dort weiter mit der Anleitung (auf <strong>Installieren</strong> tippen)</li>
+          </ol>
+        </div>
+
+        <div id="ios-steps">
+          <ol class="ios-steps">
+            <li>Tippe in Safari auf das <strong>Teilen-Symbol</strong>
+              <svg class="ios-share-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <br><small>iPhone: Leiste unten · iPad: oben rechts</small></li>
+            <li>Scrolle nach unten und wähle <strong>„Zum Home-Bildschirm"</strong></li>
+            <li>Tippe oben rechts auf <strong>„Hinzufügen"</strong></li>
+          </ol>
+          <p>Danach die App <strong>über das Symbol auf dem Home-Bildschirm</strong> öffnen. Nur so funktionieren auch Benachrichtigungen (ab iOS 16.4).</p>
+        </div>
+      </div>
+    </div>
+  </div>
   <main>
     <section id="view-archive" class="view active">
       <h2 class="section-title">Alle Ausgaben</h2>

@@ -103,7 +103,25 @@ window.addEventListener('beforeinstallprompt',(e)=>{
   e.preventDefault(); deferredInstallPrompt=e;
   document.getElementById('install-banner').classList.remove('hidden');
 });
+const ua=navigator.userAgent;
+// iPadOS meldet sich im Desktop-Modus als Mac, daher zusaetzlich Touch-Pruefung
+const isIos=/iphone|ipad|ipod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const isStandalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+// In WhatsApp/Instagram/Facebook & Co. fehlt "Safari/" im User-Agent, dort gibt es kein "Zum Home-Bildschirm"
+const isIosInApp=isIos&&(!/Safari\//.test(ua)||/FBAN|FBAV|Instagram|Line\/|MicroMessenger/.test(ua));
+
+const iosModal=document.getElementById('ios-install-modal');
+const closeIosModal=()=>iosModal.classList.add('hidden');
+document.getElementById('ios-install-close').addEventListener('click',closeIosModal);
+iosModal.addEventListener('click',(e)=>{ if(e.target===iosModal) closeIosModal(); });
+
 document.getElementById('install-btn').addEventListener('click',async()=>{
+  if(isIos){
+    document.getElementById('ios-inapp').classList.toggle('hidden',!isIosInApp);
+    document.getElementById('ios-steps').classList.toggle('hidden',isIosInApp);
+    iosModal.classList.remove('hidden');
+    return;
+  }
   if(!deferredInstallPrompt)return;
   deferredInstallPrompt.prompt();
   const{outcome}=await deferredInstallPrompt.userChoice;
@@ -113,11 +131,12 @@ document.getElementById('install-btn').addEventListener('click',async()=>{
 document.getElementById('install-close').addEventListener('click',()=>
   document.getElementById('install-banner').classList.add('hidden'));
 
-const isIos=/iphone|ipad|ipod/i.test(navigator.userAgent);
-const isStandalone=window.matchMedia('(display-mode: standalone)').matches;
 if(isIos&&!isStandalone){
   const b=document.getElementById('install-banner');
-  b.querySelector('span').textContent='Tippe auf "Teilen" dann "Zum Home-Bildschirm" um die App zu installieren';
+  if(isIosInApp){
+    b.querySelector('span').textContent='📲 Zum Installieren bitte in Safari öffnen';
+    document.getElementById('install-btn').textContent='Wie?';
+  }
   b.classList.remove('hidden');
 }
 

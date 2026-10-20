@@ -66,9 +66,6 @@ jobs:
             echo "Keine Änderungen."
             exit 0
           fi
-          TIMESTAMP=$(date +%s)
-          sed -i "s/BUILD: [0-9]*/BUILD: ${TIMESTAMP}/" docs/sw.js
-          git add docs/sw.js
           if [ "$NEW" = "true" ] && [ "$PUSH_OPT" != "nein (nur testen)" ]; then
             printf '%s\n' "$TITLE" > docs/pending_spielbericht_push.txt
             git add docs/pending_spielbericht_push.txt
@@ -78,4 +75,10 @@ jobs:
           else
             git commit -m "Spielbericht aktualisiert [automatisch]"
           fi
-          git push
+          # bump-sw.yml pusht parallel auf main: bei abgelehntem Push neu aufsetzen und wiederholen
+          ok=0
+          for i in 1 2 3 4; do
+            if git pull --rebase -q && git push; then ok=1; break; fi
+            sleep 5
+          done
+          [ "$ok" = 1 ]

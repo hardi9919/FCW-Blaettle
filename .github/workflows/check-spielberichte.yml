@@ -53,6 +53,11 @@ jobs:
 
       - name: Änderungen committen
         if: steps.check_rss.outputs.changed == 'true'
+        env:
+          # Per env statt direkt im Skript: Anfuehrungszeichen im Titel duerfen die Shell nicht aufbrechen
+          PUSH_OPT: ${{ github.event.inputs.push_senden }}
+          NEW:      ${{ steps.check_rss.outputs.new_article }}
+          TITLE:    ${{ steps.check_rss.outputs.push_title }}
         run: |
           git config user.name  "FCW Bot"
           git config user.email "bot@fcweisingen.de"
@@ -64,14 +69,10 @@ jobs:
           TIMESTAMP=$(date +%s)
           sed -i "s/BUILD: [0-9]*/BUILD: ${TIMESTAMP}/" docs/sw.js
           git add docs/sw.js
-          PUSH_OPT="${{ github.event.inputs.push_senden }}"
-          NEW="${{ steps.check_rss.outputs.new_article }}"
           if [ "$NEW" = "true" ] && [ "$PUSH_OPT" != "nein (nur testen)" ]; then
-            TITLE="${{ steps.check_rss.outputs.push_title }}"
-            echo "$TITLE" > docs/pending_spielbericht_push.txt
+            printf '%s\n' "$TITLE" > docs/pending_spielbericht_push.txt
             git add docs/pending_spielbericht_push.txt
           fi
-          TITLE="${{ steps.check_rss.outputs.push_title }}"
           if [ -n "$TITLE" ]; then
             git commit -m "Neuer Spielbericht: $TITLE [automatisch]"
           else
